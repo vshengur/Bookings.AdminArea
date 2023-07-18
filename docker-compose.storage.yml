@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  bookings-storage:
+    build:
+      context: .
+      dockerfile: Bookings.Storage/Dockerfile
+    networks:
+      - proxy
+    ports:
+      - 8080:80
+    depends_on:
+      - bookings-db
+      - rabbitMQ
+    environment:
+      Bookings_Storage_DB_PASSWORD: "fw324fe"
+      Bookings_Storage_RabbitMqHost: "${MAIN_SERVER_ADDRESS}"
+
+  bookings-db:
+    restart: always
+    image: mongo:6.0.7
+    volumes:
+        - ./data/bookings-data:/data/db
+    environment:  
+        MONGO_INITDB_ROOT_USERNAME: root
+        MONGO_INITDB_ROOT_PASSWORD: fw324fe
+    networks:
+      - proxy
+    ports:
+      - 27017:27017
+
+  rabbitMQ:
+    image: rabbitmq:3.12-management
+    hostname: rabbitmq
+    container_name: rabbitmq
+    labels:
+      NAME: "rabbitmq"
+    environment:
+      RABBITMQ_DEFAULT_VHOST: "/"
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - proxy
+    ports:
+      - 10000:15672
+      - 5672:5672
+    volumes:
+      - ./data/rabbitmq:/var/lib/rabbitmq
+
+volumes:
+  bookings-data:
+  
+networks:
+  proxy:
+    driver: bridge

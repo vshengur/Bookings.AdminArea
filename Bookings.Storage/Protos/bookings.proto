@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+option csharp_namespace = "Bookings.Storage";
+
+package bookings;
+
+service BookingsContract {
+  rpc GetBookings (BookingsRequest) returns (BookingsResponse);
+}
+
+message BookingsRequest {
+  string id = 1;
+  int32 page = 2;
+  int32 count = 3;
+}
+
+message BookingsResponse {
+    repeated BookingItem bookings = 1;
+}
+message BookingItem {
+  string id = 1;
+  string hotelId = 2;
+  string bookName = 3;
+  double price = 4;
+  string category = 5;
+}

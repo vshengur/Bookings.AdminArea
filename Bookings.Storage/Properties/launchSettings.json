@@ -1,0 +1,19 @@
+{
+  "profiles": {
+    "Bookings.Storage": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "Bookings_Storage_RabbitMqHost": "localhost"
+      },
+      "applicationUrl": "http://localhost:5073;https://localhost:7073",
+      "dotnetRunMessages": true
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+      "publishAllPorts": true,
+      "useSSL": true
+    }
+  }
+}
