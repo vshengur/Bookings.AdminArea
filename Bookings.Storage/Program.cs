@@ -1,4 +1,5 @@
 using Bookings.Repositories.Contexts;
+using Bookings.Repositories.Domain;
 using Bookings.Repositories.Models.Settings;
 using Bookings.Storage.Queues.Consumers;
 using Bookings.Storage.Services;
@@ -14,10 +15,21 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddGrpc();
 
+builder.Configuration.AddEnvironmentVariables(prefix: "Bookings_Storage_");
+
 builder.Services.Configure<BookingsStoreDatabaseSettings>(options =>
 {
-    options.ConnectionString = builder.Configuration
-        .GetSection($"BookingDatabase:{nameof(BookingsStoreDatabaseSettings.ConnectionString)}").Value;
+    var user = builder.Configuration
+        .GetRequiredSection("DB_USER").Value;
+    var password = builder.Configuration
+        .GetRequiredSection("DB_PASSWORD").Value;
+    var host = builder.Configuration
+        .GetRequiredSection("DB_HOST").Value;
+    var port = builder.Configuration
+        .GetRequiredSection("DB_PORT").Value;
+
+    options.ConnectionString = $"mongodb://{user}:{password}@{host}:{port}/?authMechanism=SCRAM-SHA-256";
+
     options.DatabaseName = builder.Configuration
         .GetSection($"BookingDatabase:{nameof(BookingsStoreDatabaseSettings.DatabaseName)}").Value;
     options.BookingsCollectionName = builder.Configuration
@@ -28,8 +40,8 @@ builder.Services.Configure<BookingsStoreDatabaseSettings>(options =>
         .GetSection($"BookingDatabase:{nameof(BookingsStoreDatabaseSettings.ClientsCollectionName)}").Value;
 });
 builder.Services.AddSingleton<IMongoDBContext, MongoBookingsDBContext>();
-
-builder.Configuration.AddEnvironmentVariables(prefix: "Bookings_Storage_");
+builder.Services.AddTransient<BookingsRepository>();
+builder.Services.AddTransient<HotelsRepository>();
 
 builder.Services.AddMassTransit(x =>
 {
@@ -40,11 +52,11 @@ builder.Services.AddMassTransit(x =>
 
     x.UsingRabbitMq((context, cfg) =>
     {
-        var rabbitMqHost = builder.Configuration.GetSection($"RabbitMqHost").Value;
+        var rabbitMqHost = builder.Configuration.GetRequiredSection($"RabbitMq_Host").Value;
 
         cfg.Host(rabbitMqHost, "/", h => {
-            h.Username("guest");
-            h.Password("guest");
+            h.Username(builder.Configuration.GetRequiredSection($"RabbitMq_User").Value);
+            h.Password(builder.Configuration.GetRequiredSection($"RabbitMq_Password").Value);
         });
 
         cfg.ConfigureEndpoints(context);
