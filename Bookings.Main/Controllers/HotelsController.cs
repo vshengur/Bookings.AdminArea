@@ -1,16 +1,10 @@
-﻿using Bookings.Domain.Models;
-using Bookings.Domain.Queues.Messages;
-using Bookings.Web.Controllers;
-using Bookings.Web.Models.Responses;
-using Grpc.Core;
-using MassTransit;
-using Microsoft.AspNetCore.Mvc;
-
-using System.Xml;
-using System.Xml.Linq;
-
-namespace Bookings.Main.Controllers
+﻿namespace Bookings.Main.Controllers
 {
+    using Bookings.Domain.Models;
+    using Bookings.Domain.Queues.Messages;
+    using MassTransit;
+    using Microsoft.AspNetCore.Mvc;
+
     /// <summary>
     /// Контроллер упралвения заказами.
     /// </summary>
@@ -18,8 +12,8 @@ namespace Bookings.Main.Controllers
     [Route("api/[controller]")]
     public class HotelsController : ControllerBase
     {
-        private readonly ILogger<HotelsController> logger;
-        private readonly IBus bus;
+        private readonly ILogger<HotelsController> _logger;
+        private readonly IBus _bus;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="HotelsController"/> class.
@@ -31,8 +25,8 @@ namespace Bookings.Main.Controllers
             ILogger<HotelsController> logger,
             IBus bus)
         {
-            this.logger = logger;
-            this.bus = bus;
+            _logger = logger;
+            _bus = bus;
         }
 
         /// <summary>
@@ -41,7 +35,7 @@ namespace Bookings.Main.Controllers
         /// <returns>Результат оформления операции.</returns>
         [HttpPost]
         [Route("populate")]
-        public async Task PopulateAsync(int count = 100_000)
+        public async Task PopulateAsync([FromQuery]int count = 1_000)
         {
             var cities = new string[10]
             {
@@ -88,7 +82,7 @@ namespace Bookings.Main.Controllers
                     LocationY = bookingModel.LocationY,
                 };
 
-                await this.bus.Publish(newItem).ConfigureAwait(false);
+                await _bus.Publish(newItem).ConfigureAwait(false);
             }
 
             Random GetRandom()
@@ -115,7 +109,7 @@ namespace Bookings.Main.Controllers
                 LocationY = bookingModel.LocationY,
             };
 
-            await this.bus.Publish(newItem).ConfigureAwait(false);
+            await _bus.Publish(newItem).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -135,7 +129,7 @@ namespace Bookings.Main.Controllers
                 RoomsCount = bookingModel.RoomsCount,
             };
 
-            await this.bus.Send(newItem).ConfigureAwait(false);
+            await _bus.Send(newItem).ConfigureAwait(false);
         }
     }
 }

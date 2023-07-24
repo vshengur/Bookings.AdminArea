@@ -1,12 +1,8 @@
 using Bookings.Web;
-
 using Grpc.Core;
 using Grpc.Net.Client.Configuration;
-
 using MassTransit;
-
 using Microsoft.AspNetCore.Diagnostics;
-
 using static System.Net.Mime.MediaTypeNames;
 
 var builder = WebApplication.CreateBuilder(args);
