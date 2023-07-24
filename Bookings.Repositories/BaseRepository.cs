@@ -2,6 +2,8 @@
 using Bookings.Domain;
 using Bookings.Repositories.Contexts;
 
+using Microsoft.Extensions.Logging;
+
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -11,12 +13,20 @@ namespace Bookings.Repositories
         : IBaseRepository<TEntity> where TEntity : BaseObject
     {
         protected readonly IMongoDBContext _mongoContext;
+        protected readonly ILogger<BaseRepository<TEntity>> _logger;
         protected IMongoCollection<TEntity> _dbCollection;
 
-        protected BaseRepository(IMongoDBContext context)
+        protected BaseRepository(
+            IMongoDBContext context,
+            ILogger<BaseRepository<TEntity>> logger)
         {
             _mongoContext = context;
-            _dbCollection = _mongoContext.GetCollection<TEntity>(typeof(TEntity).Name);
+            _logger = logger;
+
+            var mongoCollection = typeof(TEntity).Name + "s";
+            _logger.LogTrace("Getting collection {mongoCollection}", mongoCollection);
+
+            _dbCollection = _mongoContext.GetCollection<TEntity>(mongoCollection);
         }
 
         public async Task Create(TEntity obj)
