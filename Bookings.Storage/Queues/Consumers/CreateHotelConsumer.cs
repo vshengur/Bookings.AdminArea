@@ -9,15 +9,17 @@ namespace Bookings.Storage.Queues.Consumers
     public class CreateHotelConsumer : IConsumer<CreateHotelMessage>
     {
         readonly ILogger<CreateHotelConsumer> _logger;
-        private readonly BookingsRepository bookingsRepository;
-        private readonly HotelsRepository hotelsRepository;
+        private readonly BookingsRepository _bookingsRepository;
+        private readonly HotelsRepository _hotelsRepository;
 
-        public CreateHotelConsumer(ILogger<CreateHotelConsumer> logger,
-            IMongoDBContext dBContext)
+        public CreateHotelConsumer(
+            ILogger<CreateHotelConsumer> logger,
+            BookingsRepository bookingsRepository,
+            HotelsRepository hotelsRepository)
         {
             _logger = logger;
-            bookingsRepository = new BookingsRepository(dBContext);
-            hotelsRepository = new HotelsRepository(dBContext);
+            _bookingsRepository = bookingsRepository;
+            _hotelsRepository = hotelsRepository;
         }
 
         public async Task Consume(ConsumeContext<CreateHotelMessage> context)
@@ -34,7 +36,7 @@ namespace Bookings.Storage.Queues.Consumers
                 LocationY = context.Message.LocationY,
             };
 
-            await hotelsRepository.Create(newItem);
+            await _hotelsRepository.Create(newItem);
             return;
         }
     }

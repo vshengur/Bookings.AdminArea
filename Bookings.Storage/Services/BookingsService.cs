@@ -2,6 +2,7 @@ using Bookings.Domain;
 using Bookings.Repositories.Contexts;
 using Bookings.Repositories.Domain;
 using Bookings.Repositories.Domain.Interfaces;
+using Bookings.Web;
 
 using Grpc.Core;
 
@@ -15,13 +16,16 @@ namespace Bookings.Storage.Services
         private readonly IBookingsRepository bookingsRepository;
         private readonly IHotelsRepository hotelsRepository;
         private readonly IBus _bus;
+
         public BookingsService(
             IMongoDBContext dBContext,
+            IBus bus,
             ILogger<BookingsService> logger,
-            IBus bus)
+            ILogger<BookingsRepository> bookingLogger,
+            ILogger<HotelsRepository> hotelsLogger)
         {
-            bookingsRepository = new BookingsRepository(dBContext);
-            hotelsRepository = new HotelsRepository(dBContext);
+            bookingsRepository = new BookingsRepository(dBContext, bookingLogger);
+            hotelsRepository = new HotelsRepository(dBContext, hotelsLogger);
 
             _logger = logger;
             _bus = bus;
