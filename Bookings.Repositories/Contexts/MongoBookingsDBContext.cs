@@ -25,7 +25,10 @@ namespace Bookings.Repositories.Contexts
         public IClientSessionHandle Session { get; set; }
 
         /// <inheritdoc/>
-        public IMongoCollection<Hotel> HotelsCollection { get; }
+        public readonly IMongoCollection<Hotel> HotelsCollection;
+
+        /// <inheritdoc/>
+        public readonly IMongoCollection<Booking> BookingsCollection;
 
         /// <inheritdoc/>
         public Collation CaseInsensitiveCollation { get; } = new Collation("ru", strength: CollationStrength.Primary);
@@ -44,6 +47,7 @@ namespace Bookings.Repositories.Contexts
 
 
             HotelsCollection = GetCollection<Hotel>(configuration.Value.HotelsCollectionName);
+            BookingsCollection = GetCollection<Booking>(configuration.Value.BookingsCollectionName);
 
             //InitIndexes();
 
@@ -70,7 +74,8 @@ namespace Bookings.Repositories.Contexts
             /// Сначала инициализируем данные индексы,
             /// т.к. по их запуску сбрасываются все остальные индексы
             Task.WaitAll(
-                CreateRecourseCollectionIndex(HotelsCollection)
+                CreateRecourseCollectionIndex(HotelsCollection),
+                CreateRecourseCollectionIndex(BookingsCollection)
             );
 
             _logger.LogDebug("End initialize Indexes");
