@@ -1,8 +1,10 @@
 ﻿namespace Bookings.Main.Controllers
 {
-    using Bookings.Domain.Models;
+    using Bookings.Domain.DTO;
     using Bookings.Domain.Queues.Messages;
+
     using MassTransit;
+
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -52,7 +54,7 @@
             for (var i = 0; i < count; i++)
             {
                 var city = cities[GetRandom().Next(0, cities.Length)];
-                var bookingModel = new HotelModel()
+                var bookingModel = new HotelDTO()
                 {
                     City = city,
                     LocationX = GetRandom().NextDouble() * 90,
@@ -97,7 +99,7 @@
         /// <param name="bookingModel">Модель нового бронирования.</param>
         /// <returns>Результат оформления операции.</returns>
         [HttpPost]
-        public async Task PostAsync([FromBody] HotelModel bookingModel)
+        public async Task PostAsync([FromBody] HotelDTO bookingModel)
         {
             var newItem = new CreateHotelMessage()
             {
@@ -120,7 +122,7 @@
         /// <returns>Результат оформления операции.</returns>
         [HttpPut]
         [Route("api/[controller]/{id}")]
-        public async Task PutAsync(string id, [FromBody] HotelModel bookingModel)
+        public async Task PutAsync(string id, [FromBody] HotelDTO bookingModel)
         {
             var newItem = new UpdateHotelMessage()
             {

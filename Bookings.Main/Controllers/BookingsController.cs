@@ -1,11 +1,13 @@
 ﻿namespace Bookings.Web.Controllers
 {
-    using Bookings.Domain.Models;
+    using Bookings.Domain.DTO;
     using Bookings.Domain.Queues.Messages;
     using Bookings.Web.Models.Responses;
 
     using Grpc.Core;
+
     using MassTransit;
+
     using Microsoft.AspNetCore.Mvc;
 
     /// <summary>
@@ -67,7 +69,7 @@
         /// <param name="bookingModel">Модель нового бронирования.</param>
         /// <returns>Результат оформления операции.</returns>
         [HttpPost]
-        public async Task PostAsync([FromBody] BookingModel bookingModel)
+        public async Task PostAsync([FromBody] BookingDTO bookingModel)
         {
             var newItem = new CreateBookingMessage()
             {
@@ -89,7 +91,7 @@
         /// <returns>Результат оформления операции.</returns>
         [HttpPut]
         [Route("api/[controller]/{id}")]
-        public async Task PutAsync(string id, [FromBody] BookingModel bookingModel)
+        public async Task PutAsync(string id, [FromBody] BookingDTO bookingModel)
         {
             var newItem = new UpdateBookingMessage()
             {

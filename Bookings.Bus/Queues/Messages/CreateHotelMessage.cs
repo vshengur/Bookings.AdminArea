@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Bookings.Domain.Models
+namespace Bookings.Bus.Queues.Messages
 {
-    public class HotelModel
+    public record CreateHotelMessage
     {
         public string Name { get; set; }
 

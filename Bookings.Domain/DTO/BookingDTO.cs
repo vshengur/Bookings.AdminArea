@@ -5,9 +5,9 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Bookings.Domain.Models
+namespace Bookings.Domain.DTO
 {
-    public class BookingModel
+    public class BookingDTO
     {
         public double Price { get; set; }
 
