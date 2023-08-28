@@ -1,22 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Bookings.Domain.DTO.BookingProcess;
 
-namespace Bookings.Domain.DTO
+namespace Bookings.Domain.DTO;
+
+public record BaseRequestResponseDTO
 {
-    public class BookingDTO
-    {
-        public double Price { get; set; }
+    public bool IsRequestResponsePattern { get; set; }
+}
 
-        public string BookName { get; set; }
+public record BookingDTO : BaseRequestResponseDTO
+{
+    public double Price { get; set; }
 
-        public DateTime CreatedDate { get; set; }
+    public string? BookName { get; set; }
 
-        public string Category { get; set; }
+    public DateTime CreatedDate { get; set; }
 
-        public string HotelId { get; set; }
-    }
+    public string? Category { get; set; }
+
+    public required string HotelId { get; set; }
+}
+
+public record UpdateBookingDTO : BookingDTO
+{
+    public Guid CorrelationId { get; set; }
+
+    public string BookingId { get; set; }
+
+    public BookingState State { get; set; }
 }

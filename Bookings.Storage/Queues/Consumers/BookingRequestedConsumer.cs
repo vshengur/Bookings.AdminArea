@@ -1,18 +1,18 @@
-﻿using Bookings.Bus.Queues.Messages;
+﻿using Bookings.Bus.Sagas.Events.Abstractions;
+using Bookings.Domain.DTO.BookingProcess;
 using Bookings.Domain;
 using Bookings.Repositories.Domain;
-
 using MassTransit;
 
 namespace Bookings.Storage.Queues.Consumers
 {
-    public class CreateBookingConsumer : IConsumer<CreateBookingMessage>
+    public class BookingRequestedConsumer : IConsumer<IBookingRequested>
     {
         readonly ILogger<CreateBookingConsumer> _logger;
         private readonly BookingsRepository _bookingsRepository;
         private readonly HotelsRepository _hotelsRepository;
 
-        public CreateBookingConsumer(
+        public BookingRequestedConsumer(
             ILogger<CreateBookingConsumer> logger,
             BookingsRepository bookingsRepository,
             HotelsRepository hotelsRepository)
@@ -22,12 +22,13 @@ namespace Bookings.Storage.Queues.Consumers
             _hotelsRepository = hotelsRepository;
         }
 
-        public async Task Consume(ConsumeContext<CreateBookingMessage> context)
+        public async Task Consume(ConsumeContext<IBookingRequested> context)
         {
             _logger.LogInformation(message: "Creating {BookName}", context.Message.BookName);
 
             var newItem = new Booking()
             {
+                StateId = context.Message.CorrelationId,
                 BookName = context.Message.BookName,
                 Category = context.Message.Category,
                 Hotel = await _hotelsRepository.Get(context.Message.HotelId),
@@ -35,7 +36,12 @@ namespace Bookings.Storage.Queues.Consumers
             };
 
             await _bookingsRepository.Create(newItem);
-            return;
+
+            await context.RespondAsync(new BookingProcessDto
+            {
+                BookingId = newItem.Id!,
+                CorrelationId = context.Message.CorrelationId,
+            });
         }
     }
 }

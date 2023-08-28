@@ -13,7 +13,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bookings.AvailableRooms", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bookings.Main", "Bookings.Main\Bookings.Main.csproj", "{1513DBF3-C2F2-4AF7-90CD-135EC2778E1D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bookings.Bus", "Bookings.Bus\Bookings.Bus.csproj", "{C5E00AD1-4B8E-4C7E-9F80-48CCFE42841C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bookings.Bus", "Bookings.Bus\Bookings.Bus.csproj", "{C5E00AD1-4B8E-4C7E-9F80-48CCFE42841C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{573BC861-EDF5-4EA9-9A70-19577E31B61C}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

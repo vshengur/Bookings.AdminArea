@@ -14,6 +14,8 @@ namespace Bookings.Domain
 
         public string Category { get; set; } = null!;
 
+        public Guid StateId { get; set; }
+
         public Booking()
             :base()
         {

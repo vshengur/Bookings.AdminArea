@@ -1,7 +1,7 @@
 ﻿namespace Bookings.Main.Controllers
 {
+    using Bookings.Bus.Queues.Messages;
     using Bookings.Domain.DTO;
-    using Bookings.Domain.Queues.Messages;
 
     using MassTransit;
 

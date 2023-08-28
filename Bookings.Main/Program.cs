@@ -1,26 +1,51 @@
+#pragma warning disable SA1200 // Using directives should be placed correctly
+using Bookings.Bus.Sagas.StateMachine;
+using Bookings.Bus.Sagas.States;
 using Bookings.Web;
 using Grpc.Core;
 using Grpc.Net.Client.Configuration;
 using MassTransit;
 using Microsoft.AspNetCore.Diagnostics;
 using static System.Net.Mime.MediaTypeNames;
+#pragma warning restore SA1200 // Using directives should be placed correctly
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
+builder.Configuration.AddEnvironmentVariables(prefix: "Api_Storage_");
+
 builder.Services.AddMassTransit(x =>
 {
+    var user = builder.Configuration.GetRequiredSection("DB_USER").Value;
+    var password = builder.Configuration.GetRequiredSection("DB_PASSWORD").Value;
+    var host = builder.Configuration.GetRequiredSection("DB_HOST").Value;
+    var port = builder.Configuration.GetRequiredSection("DB_PORT").Value;
+
+    var databaseName = builder.Configuration.GetSection($"BookingDatabase:DatabaseName").Value;
+    var bookingsStateCollectionName = builder.Configuration.GetSection($"BookingDatabase:BookingsStateCollectionName").Value;
+
+    // Настройка MongoDb
+    var mongoUrl = $"mongodb://{user}:{password}@{host}:{port}/?authMechanism=SCRAM-SHA-256";
+
     x.SetKebabCaseEndpointNameFormatter();
     x.UsingRabbitMq((context, cfg) =>
     {
-        cfg.Host("localhost", "/", h =>
+        cfg.Host(builder.Configuration.GetRequiredSection($"RabbitMq_Host").Value, "/", h =>
         {
-            h.Username("guest");
-            h.Password("guest");
+            h.Username(builder.Configuration.GetRequiredSection($"RabbitMq_User").Value);
+            h.Password(builder.Configuration.GetRequiredSection($"RabbitMq_Password").Value);
         });
 
         cfg.ConfigureEndpoints(context);
     });
+
+    x.AddSagaStateMachine<BookingMainSaga, BookingMainSagaState>()
+        .MongoDbRepository(r =>
+        {
+            r.Connection = mongoUrl;
+            r.DatabaseName = databaseName;
+            r.CollectionName = bookingsStateCollectionName;
+        });
 });
 
 var methodConfig = new MethodConfig()
@@ -44,7 +69,7 @@ builder.Services.AddGrpcClient<BookingsContract.BookingsContractClient>(o =>
 //{
 //    var handler = new HttpClientHandler
 //    {
-//        UseCookies = false
+//        UseCookies = false,
 //    };
 //    //handler.ClientCertificates.Add(LoadCertificate());
 //    return handler;

@@ -1,6 +1,5 @@
-﻿using Bookings.Domain.Queues.Messages;
+﻿using Bookings.Bus.Queues.Messages;
 using Bookings.Domain;
-using Bookings.Repositories.Contexts;
 using Bookings.Repositories.Domain;
 using MassTransit;
 

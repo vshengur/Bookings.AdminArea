@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Bookings.Bus\Bookings.Bus.csproj" />
     <ProjectReference Include="..\Bookings.Repositories\Bookings.Repositories.csproj" />
   </ItemGroup>
 

@@ -31,13 +31,13 @@ builder.Services.Configure<BookingsStoreDatabaseSettings>(options =>
     options.ConnectionString = $"mongodb://{user}:{password}@{host}:{port}/?authMechanism=SCRAM-SHA-256";
 
     options.DatabaseName = builder.Configuration
-        .GetSection($"BookingDatabase:{nameof(BookingsStoreDatabaseSettings.DatabaseName)}").Value;
+        .GetRequiredSection($"BookingDatabase:{nameof(BookingsStoreDatabaseSettings.DatabaseName)}")!.Value!;
     options.BookingsCollectionName = builder.Configuration
-        .GetSection($"BookingDatabase:{nameof(BookingsStoreDatabaseSettings.BookingsCollectionName)}").Value;
+        .GetRequiredSection($"BookingDatabase:{nameof(BookingsStoreDatabaseSettings.BookingsCollectionName)}").Value!;
     options.HotelsCollectionName = builder.Configuration
-        .GetSection($"BookingDatabase:{nameof(BookingsStoreDatabaseSettings.HotelsCollectionName)}").Value;
+        .GetRequiredSection($"BookingDatabase:{nameof(BookingsStoreDatabaseSettings.HotelsCollectionName)}").Value!;
     options.ClientsCollectionName = builder.Configuration
-        .GetSection($"BookingDatabase:{nameof(BookingsStoreDatabaseSettings.ClientsCollectionName)}").Value;
+        .GetRequiredSection($"BookingDatabase:{nameof(BookingsStoreDatabaseSettings.ClientsCollectionName)}").Value!;
 });
 builder.Services.AddSingleton<IMongoDBContext, MongoBookingsDBContext>();
 builder.Services.AddTransient<BookingsRepository>();
@@ -49,6 +49,15 @@ builder.Services.AddMassTransit(x =>
 
     x.AddConsumer<CreateBookingConsumer>();
     x.AddConsumer<CreateHotelConsumer>();
+
+    x.AddConsumer<BookingRequestedConsumer>();
+    x.AddRequestClient<BookingRequestedConsumer>();
+
+    x.AddConsumer<BookingConfirmedConsumer>();
+    x.AddRequestClient<BookingConfirmedConsumer>();
+
+    x.AddConsumer<BookingCancelledConsumer>();
+    x.AddRequestClient<BookingCancelledConsumer>();
 
     x.UsingRabbitMq((context, cfg) =>
     {
