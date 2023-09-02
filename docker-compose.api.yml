@@ -1,25 +1,25 @@
 version: '3.8'
 
 services:
-#  bookings-storage:
-#    build:
-#      context: .
-#      dockerfile: Bookings.Storage/Dockerfile
-#    networks:
-#      - proxy
-#    ports:
-#      - 8081:80
-#    depends_on:
-#      - api-db
-#      - api-rabbitMQ
-#    environment:
-#      Api_Storage_DB_USER: "${BOOKINGS_DB_USER}"
-#      Api_Storage_DB_PASSWORD: "${BOOKINGS_DB_PASSWORD}"
-#      Api_Storage_DB_HOST: "${MAIN_SERVER_ADDRESS}"
-#      Api_Storage_DB_PORT: "${BOOKINGS_DB_PORT}"
-#      Api_Storage_RabbitMq_Host: "${MAIN_SERVER_ADDRESS}"
-#      Api_Storage_RabbitMq_User: "${RABBITMQ_USER}"
-#      Api_Storage_RabbitMq_Password: "${RABBITMQ_PASSWORD}"
+  bookings-storage:
+    build:
+      context: .
+      dockerfile: Bookings.Storage/Dockerfile
+    networks:
+      - proxy
+    ports:
+      - 8081:80
+    depends_on:
+      - api-db
+      - api-rabbitMQ
+    environment:
+      Api_Storage_DB_USER: "${BOOKINGS_DB_USER}"
+      Api_Storage_DB_PASSWORD: "${BOOKINGS_DB_PASSWORD}"
+      Api_Storage_DB_HOST: "${MAIN_SERVER_ADDRESS}"
+      Api_Storage_DB_PORT: "${BOOKINGS_DB_PORT}"
+      Api_Storage_RabbitMq_Host: "${MAIN_SERVER_ADDRESS}"
+      Api_Storage_RabbitMq_User: "${RABBITMQ_USER}"
+      Api_Storage_RabbitMq_Password: "${RABBITMQ_PASSWORD}"
 
   bookings-db:
     restart: always
