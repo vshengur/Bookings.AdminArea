@@ -8,16 +8,13 @@ namespace Bookings.Storage.Queues.Consumers
     public class CreateHotelConsumer : IConsumer<CreateHotelMessage>
     {
         readonly ILogger<CreateHotelConsumer> _logger;
-        private readonly BookingsRepository _bookingsRepository;
         private readonly HotelsRepository _hotelsRepository;
 
         public CreateHotelConsumer(
             ILogger<CreateHotelConsumer> logger,
-            BookingsRepository bookingsRepository,
             HotelsRepository hotelsRepository)
         {
             _logger = logger;
-            _bookingsRepository = bookingsRepository;
             _hotelsRepository = hotelsRepository;
         }
 
