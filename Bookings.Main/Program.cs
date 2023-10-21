@@ -1,6 +1,8 @@
 #pragma warning disable SA1200 // Using directives should be placed correctly
 using Bookings.Bus.Sagas.StateMachine;
 using Bookings.Bus.Sagas.States;
+using Bookings.Services.Implementations;
+using Bookings.Services.Interfaces;
 using Bookings.Web;
 using Grpc.Core;
 using Grpc.Net.Client.Configuration;
@@ -48,7 +50,7 @@ builder.Services.AddMassTransit(x =>
         });
 });
 
-var methodConfig = new MethodConfig()
+var grpcMethodConfig = new MethodConfig()
 {
     Names = { MethodName.Default },
     RetryPolicy = new RetryPolicy
@@ -65,24 +67,17 @@ builder.Services.AddGrpcClient<BookingsContract.BookingsContractClient>(o =>
 {
     o.Address = new Uri("https://localhost:7073");
 })
-//.ConfigurePrimaryHttpMessageHandler(() =>
-//{
-//    var handler = new HttpClientHandler
-//    {
-//        UseCookies = false,
-//    };
-//    //handler.ClientCertificates.Add(LoadCertificate());
-//    return handler;
-//})
 .ConfigureChannel(o =>
 {
     o.Credentials = ChannelCredentials.SecureSsl;
     o.ServiceConfig = new ServiceConfig
     {
         LoadBalancingConfigs = { new RoundRobinConfig() },
-        MethodConfigs = { methodConfig },
+        MethodConfigs = { grpcMethodConfig },
     };
 });
+
+builder.Services.AddTransient<IBookingStateService, BookingStateService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -121,6 +116,11 @@ app.UseExceptionHandler(exceptionHandlerApp =>
     });
 });
 
+app.UseHttpsRedirection();
+
+app.MapControllers();
+app.UseRouting();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -132,13 +132,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
-        options.RoutePrefix = string.Empty;
+        options.RoutePrefix = "swagger";
     });
 }
-
-app.UseHttpsRedirection();
-
-app.MapControllers();
-app.UseRouting();
 
 app.Run();

@@ -29,6 +29,7 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\Bookings.Bus\Bookings.Bus.csproj" />
 	  <ProjectReference Include="..\Bookings.Domain\Bookings.Domain.csproj" />
+	  <ProjectReference Include="..\Bookings.Services\Bookings.Services.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

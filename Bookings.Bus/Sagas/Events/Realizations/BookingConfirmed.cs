@@ -1,12 +1,11 @@
 ﻿using Bookings.Bus.Sagas.Events.Abstractions;
-
 using MassTransit;
 
 using System.Runtime.CompilerServices;
 
 namespace Bookings.Bus.Sagas.Events.Realizations
 {
-    public record BookingRequested : IBookingRequested
+    public record BookingConfirmed : IBookingConfirmed
     {
         public Guid CorrelationId { get; set; }
 
@@ -19,6 +18,8 @@ namespace Bookings.Bus.Sagas.Events.Realizations
         public string Category { get; set; }
 
         public string HotelId { get; set; }
+
+        public string BookingId { get; set; }
 
         [ModuleInitializer]
         internal static void Init()

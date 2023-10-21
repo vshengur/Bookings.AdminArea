@@ -1,10 +1,12 @@
 ﻿namespace Bookings.Web.Controllers
 {
+    using Bookings.Bus.Processors;
     using Bookings.Bus.Queues.Messages;
     using Bookings.Bus.Sagas.Events.Abstractions;
     using Bookings.Bus.Sagas.Events.Realizations;
     using Bookings.Domain.DTO;
     using Bookings.Domain.DTO.BookingProcess;
+    using Bookings.Services.Interfaces;
     using Bookings.Web.Models.Responses;
     using Grpc.Core;
     using MassTransit;
@@ -20,34 +22,25 @@
     {
         private readonly BookingsContract.BookingsContractClient client;
         private readonly ILogger<BookingsController> logger;
+        private readonly IBookingStateService bookingStateService;
         private readonly IBus bus;
-        private readonly IRequestClient<IBookingRequested> bookingRequestedEventClient;
-        private readonly IRequestClient<IBookingCancelled> bookingCancelledEventClient;
-        private readonly IRequestClient<IBookingConfirmed> bookingConfirmedEventClient;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BookingsController"/> class.
         /// </summary>
         /// <param name="client">GRPC client.</param>
         /// <param name="logger">Some logger.</param>
-        /// <param name="bus">Bus abstraction.</param>
-        /// <param name="bookingRequestedEventClient">Client for event <see cref="IBookingRequested"/>.</param>
-        /// <param name="bookingCancelledEventClient">Client for event <see cref="IBookingRequested"/>.</param>
-        /// <param name="bookingConfirmedEventClient">Client for event <see cref="IBookingRequested"/>.</param>
+        /// <param name="bookingStateService">BookingStateService abstraction.</param>
         public BookingsController(
             BookingsContract.BookingsContractClient client,
             ILogger<BookingsController> logger,
-            IBus bus,
-            IRequestClient<IBookingRequested> bookingRequestedEventClient,
-            IRequestClient<IBookingCancelled> bookingCancelledEventClient,
-            IRequestClient<IBookingConfirmed> bookingConfirmedEventClient)
+            IBookingStateService bookingStateService,
+            IBus bus)
         {
             this.client = client;
             this.logger = logger;
+            this.bookingStateService = bookingStateService;
             this.bus = bus;
-            this.bookingRequestedEventClient = bookingRequestedEventClient;
-            this.bookingCancelledEventClient = bookingCancelledEventClient;
-            this.bookingConfirmedEventClient = bookingConfirmedEventClient;
         }
 
         /// <summary>
@@ -84,29 +77,9 @@
         [HttpPost]
         public async Task<IActionResult> PostAsync([FromBody] BookingDTO bookingModel)
         {
-            // Отправка запроса на бронирование
-            var bookingRequestedMessage = new BookingRequested
-            {
-                CorrelationId = Guid.NewGuid(),
-                Timestamp = DateTime.UtcNow,
+            var result = await bookingStateService.ProcessRequest(bookingModel);
 
-                // Дополнительные свойства для запроса бронирования
-                BookName = bookingModel.BookName,
-                Category = bookingModel.Category,
-                HotelId = bookingModel.HotelId,
-                Price = bookingModel.Price,
-            };
-
-            if (!bookingModel.IsRequestResponsePattern)
-            {
-                await bus.Publish<IBookingRequested>(bookingRequestedMessage);
-                return new NoContentResult();
-            }
-
-            var result = await bookingRequestedEventClient
-                .GetResponse<BookingProcessDto>(bookingRequestedMessage);
-
-            return new JsonResult(result);
+            return result == null ? new NoContentResult() : new JsonResult(result);
         }
 
         /// <summary>
@@ -115,67 +88,11 @@
         /// <param name="bookingModel">Модель нового бронирования.</param>
         /// <returns>Результат оформления операции.</returns>
         [HttpPut]
-        public async Task<IActionResult> PutAsync([FromBody] UpdateBookingDTO bookingModel)
+        public async Task<IActionResult> PutAsync([FromBody] BookingDTO bookingModel)
         {
-            switch (bookingModel.State)
-            {
-                case BookingState.Confirmed:
-                    {
-                        // Отправка запроса на бронирование
-                        var bookingConfirmedMessage = new BookingConfirmed
-                        {
-                            CorrelationId = bookingModel.CorrelationId,
-                            Timestamp = DateTime.UtcNow,
+            var result = await bookingStateService.ProcessRequest(bookingModel);
 
-                            // Дополнительные свойства для запроса бронирования
-                            BookingId = bookingModel.BookingId,
-                            BookName = bookingModel.BookName,
-                            Category = bookingModel.Category,
-                            HotelId = bookingModel.HotelId,
-                            Price = bookingModel.Price,
-                        };
-
-                        if (!bookingModel.IsRequestResponsePattern)
-                        {
-                            await bus.Publish<IBookingConfirmed>(bookingConfirmedMessage);
-                            return new NoContentResult();
-                        }
-
-                        var result = await bookingConfirmedEventClient
-                            .GetResponse<BookingProcessDto>(bookingConfirmedMessage);
-                        return new JsonResult(result);
-                    }
-
-                case BookingState.Cancelled:
-                    {
-                        // Отправка запроса на бронирование
-                        var bookingCancelledMessage = new BookingCancelled
-                        {
-                            CorrelationId = bookingModel.CorrelationId,
-                            Timestamp = DateTime.UtcNow,
-
-                            // Дополнительные свойства для запроса бронирования
-                            BookingId = bookingModel.BookingId,
-                            BookName = bookingModel.BookName,
-                            Category = bookingModel.Category,
-                            HotelId = bookingModel.HotelId,
-                            Price = bookingModel.Price,
-                        };
-
-                        if (!bookingModel.IsRequestResponsePattern)
-                        {
-                            await bus.Publish<IBookingCancelled>(bookingCancelledMessage);
-                            return new NoContentResult();
-                        }
-
-                        var result = await bookingCancelledEventClient
-                            .GetResponse<BookingProcessDto>(bookingCancelledMessage);
-                        return new JsonResult(result);
-                    }
-
-                default:
-                    return new NoContentResult();
-            }
+            return result == null ? new NoContentResult() : new JsonResult(result);
         }
 
         /// <summary>
@@ -196,7 +113,7 @@
                 Price = bookingModel.Price,
             };
 
-            await this.bus.Send(newItem).ConfigureAwait(false);
+            await bus.Send(newItem).ConfigureAwait(false);
         }
     }
 }

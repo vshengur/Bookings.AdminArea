@@ -24,13 +24,15 @@ public class BookingMainSaga : MassTransitStateMachine<BookingMainSagaState>
 
         During(Pending,
             When(BookingConfirmed)
-                .Then(context => {
+                .Then(context =>
+                {
                     context.Saga.Confirmed = context.Message.Timestamp;
                     return;
                 })
                 .TransitionTo(Confirmed),
             When(BookingCancelled)
-                .Then(context => {
+                .Then(context =>
+                {
                     context.Saga.Cancelled = context.Message.Timestamp;
                     return;
                 })
