@@ -1,13 +1,12 @@
 ﻿using MassTransit;
 
-namespace Bookings.Bus.Sagas.States
+namespace Bookings.Bus.Sagas.States;
+
+public class BookingState : SagaStateMachineInstance
 {
-    public class BookingState : SagaStateMachineInstance
-    {
-        public Guid CorrelationId { get; set; }
+    public Guid CorrelationId { get; set; }
 
-        public int CurrentState { get; set; }
+    public int CurrentState { get; set; }
 
-        public DateTime? BookingDate { get; set; }
-    }
+    public DateTime? BookingDate { get; set; }
 }

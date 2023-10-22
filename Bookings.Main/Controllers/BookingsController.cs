@@ -1,119 +1,120 @@
-﻿namespace Bookings.Web.Controllers
-{
-    using Bookings.Bus.Processors;
-    using Bookings.Bus.Queues.Messages;
-    using Bookings.Bus.Sagas.Events.Abstractions;
-    using Bookings.Bus.Sagas.Events.Realizations;
-    using Bookings.Domain.DTO;
-    using Bookings.Domain.DTO.BookingProcess;
-    using Bookings.Services.Interfaces;
-    using Bookings.Web.Models.Responses;
-    using Grpc.Core;
-    using MassTransit;
+﻿// <copyright file="BookingsController.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
 
-    using Microsoft.AspNetCore.Mvc;
+namespace Bookings.Web.Controllers;
+
+using Bookings.Bus.Queues.Messages;
+using Bookings.Domain.DTO;
+using Bookings.Services.Interfaces;
+using Bookings.Web.Models.Responses;
+
+using Grpc.Core;
+
+using MassTransit;
+
+using Microsoft.AspNetCore.Mvc;
+
+/// <summary>
+/// Контроллер упралвения заказами.
+/// </summary>
+[ApiController]
+[Route("api/[controller]")]
+public class BookingsController : ControllerBase
+{
+    private readonly BookingsContract.BookingsContractClient grpcBookingClient;
+    private readonly ILogger<BookingsController> logger;
+    private readonly IBookingStateService bookingStateService;
+    private readonly IBus bus;
 
     /// <summary>
-    /// Контроллер упралвения заказами.
+    /// Initializes a new instance of the <see cref="BookingsController"/> class.
     /// </summary>
-    [ApiController]
-    [Route("api/[controller]")]
-    public class BookingsController : ControllerBase
+    /// <param name="grpcBookingClient">gRPC booking client.</param>
+    /// <param name="logger">Some logger.</param>
+    /// <param name="bookingStateService">BookingStateService abstraction.</param>
+    public BookingsController(
+        BookingsContract.BookingsContractClient grpcBookingClient,
+        ILogger<BookingsController> logger,
+        IBookingStateService bookingStateService,
+        IBus bus)
     {
-        private readonly BookingsContract.BookingsContractClient client;
-        private readonly ILogger<BookingsController> logger;
-        private readonly IBookingStateService bookingStateService;
-        private readonly IBus bus;
+        this.grpcBookingClient = grpcBookingClient;
+        this.logger = logger;
+        this.bookingStateService = bookingStateService;
+        this.bus = bus;
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BookingsController"/> class.
-        /// </summary>
-        /// <param name="client">GRPC client.</param>
-        /// <param name="logger">Some logger.</param>
-        /// <param name="bookingStateService">BookingStateService abstraction.</param>
-        public BookingsController(
-            BookingsContract.BookingsContractClient client,
-            ILogger<BookingsController> logger,
-            IBookingStateService bookingStateService,
-            IBus bus)
+    /// <summary>
+    /// Получить список заказаов.
+    /// </summary>
+    /// <returns>Список заказов.</returns>
+    [HttpGet]
+    public async Task<RestApiResponse<BookingsResponse>> GetAsync()
+    {
+        try
         {
-            this.client = client;
-            this.logger = logger;
-            this.bookingStateService = bookingStateService;
-            this.bus = bus;
-        }
+            var bookings = await this.grpcBookingClient.GetBookingsAsync(
+                new BookingsRequest
+                {
+                    Count = 30,
+                    Page = 0,
+                },
+                deadline: DateTime.UtcNow.AddSeconds(10));
 
-        /// <summary>
-        /// Получить список заказаов.
-        /// </summary>
-        /// <returns>Список заказов.</returns>
-        [HttpGet]
-        public async Task<RestApiResponse<BookingsResponse>> GetAsync()
+            return RestApiResponse<BookingsResponse>.Success(bookings);
+        }
+        catch (RpcException ex) when (ex.StatusCode == Grpc.Core.StatusCode.DeadlineExceeded)
         {
-            try
-            {
-                var bookings = await this.client.GetBookingsAsync(
-                    new BookingsRequest
-                    {
-                        Count = 30,
-                        Page = 0,
-                    },
-                    deadline: DateTime.UtcNow.AddSeconds(10));
-
-                return RestApiResponse<BookingsResponse>.Success(bookings);
-            }
-            catch (RpcException ex) when (ex.StatusCode == Grpc.Core.StatusCode.DeadlineExceeded)
-            {
-                // Обработаем таймаут операции
-                return RestApiResponse<BookingsResponse>.NonSuccess(ex.Message);
-            }
+            // Обработаем таймаут операции
+            return RestApiResponse<BookingsResponse>.NonSuccess(ex.Message);
         }
+    }
 
-        /// <summary>
-        /// Создать новую запись о бронировании.
-        /// </summary>
-        /// <param name="bookingModel">Модель нового бронирования.</param>
-        /// <returns>Результат оформления операции.</returns>
-        [HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody] BookingDTO bookingModel)
+    /// <summary>
+    /// Создать новую запись о бронировании.
+    /// </summary>
+    /// <param name="bookingModel">Модель нового бронирования.</param>
+    /// <returns>Результат оформления операции.</returns>
+    [HttpPost]
+    public async Task<IActionResult> PostAsync([FromBody] BookingDTO bookingModel)
+    {
+        var result = await bookingStateService.ProcessRequest(bookingModel);
+
+        return result == null ? new NoContentResult() : new JsonResult(result);
+    }
+
+    /// <summary>
+    /// Создать новую запись о бронировании.
+    /// </summary>
+    /// <param name="bookingModel">Модель нового бронирования.</param>
+    /// <returns>Результат оформления операции.</returns>
+    [HttpPut]
+    public async Task<IActionResult> PutAsync([FromBody] BookingDTO bookingModel)
+    {
+        var result = await bookingStateService.ProcessRequest(bookingModel);
+
+        return result == null ? new NoContentResult() : new JsonResult(result);
+    }
+
+    /// <summary>
+    /// Обновить запись о бронировании.
+    /// </summary>
+    /// <param name="id">Идентификатор бронирования.</param>
+    /// <param name="bookingModel">Модель нового бронирования.</param>
+    /// <returns>Результат оформления операции.</returns>
+    [HttpPut]
+    [Route("api/[controller]/{id}")]
+    public async Task PutAsync(string id, [FromBody] BookingDTO bookingModel)
+    {
+        var newItem = new UpdateBookingMessage()
         {
-            var result = await bookingStateService.ProcessRequest(bookingModel);
+            BookingId = id,
+            BookName = bookingModel.BookName,
+            Category = bookingModel.Category,
+            Price = bookingModel.Price,
+        };
 
-            return result == null ? new NoContentResult() : new JsonResult(result);
-        }
-
-        /// <summary>
-        /// Создать новую запись о бронировании.
-        /// </summary>
-        /// <param name="bookingModel">Модель нового бронирования.</param>
-        /// <returns>Результат оформления операции.</returns>
-        [HttpPut]
-        public async Task<IActionResult> PutAsync([FromBody] BookingDTO bookingModel)
-        {
-            var result = await bookingStateService.ProcessRequest(bookingModel);
-
-            return result == null ? new NoContentResult() : new JsonResult(result);
-        }
-
-        /// <summary>
-        /// Обновить запись о бронировании.
-        /// </summary>
-        /// <param name="id">Идентификатор бронирования.</param>
-        /// <param name="bookingModel">Модель нового бронирования.</param>
-        /// <returns>Результат оформления операции.</returns>
-        [HttpPut]
-        [Route("api/[controller]/{id}")]
-        public async Task PutAsync(string id, [FromBody] BookingDTO bookingModel)
-        {
-            var newItem = new UpdateBookingMessage()
-            {
-                BookingId = id,
-                BookName = bookingModel.BookName,
-                Category = bookingModel.Category,
-                Price = bookingModel.Price,
-            };
-
-            await bus.Send(newItem).ConfigureAwait(false);
-        }
+        await bus.Send(newItem).ConfigureAwait(false);
     }
 }

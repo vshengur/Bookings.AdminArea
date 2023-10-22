@@ -1,11 +1,8 @@
-﻿
-using MongoDB.Bson;
-using MongoDB.Driver;
+﻿using MongoDB.Driver;
 
-namespace Bookings.Repositories.Contexts
+namespace Bookings.Repositories.Contexts;
+
+public interface IMongoDBContext
 {
-    public interface IMongoDBContext
-    {
-        IMongoCollection<T> GetCollection<T>(string name);
-    }
+    IMongoCollection<T> GetCollection<T>(string name);
 }

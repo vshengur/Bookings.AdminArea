@@ -1,3 +1,7 @@
+// <copyright file="Program.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
 #pragma warning disable SA1200 // Using directives should be placed correctly
 using Bookings.Bus.Sagas.StateMachine;
 using Bookings.Bus.Sagas.States;

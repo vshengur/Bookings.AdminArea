@@ -1,36 +1,39 @@
-﻿namespace Bookings.Web.Models.Responses
+﻿// <copyright file="RestApiResponse.cs" company="PlaceholderCompany">
+// Copyright (c) PlaceholderCompany. All rights reserved.
+// </copyright>
+
+namespace Bookings.Web.Models.Responses;
+
+public class RestApiResponse<T>
+    where T : class
 {
-    public class RestApiResponse<T>
-        where T : class
+    public bool IsSuccess { get; private set; }
+
+    public string Error { get; private set; }
+
+    public T? Result { get; private set; }
+
+    /// <summary>
+    /// s.
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
+    public static RestApiResponse<T> Success(T data)
     {
-        public bool IsSuccess { get; private set; }
-
-        public string Error { get; private set; }
-
-        public T? Result { get; private set; }
-
-        /// <summary>
-        /// s.
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        public static RestApiResponse<T> Success(T data)
+        return new RestApiResponse<T>()
         {
-            return new RestApiResponse<T>()
-            {
-                IsSuccess = true,
-                Result = data,
-            };
-        }
+            IsSuccess = true,
+            Result = data,
+        };
+    }
 
-        public static RestApiResponse<T> NonSuccess(string error)
+    public static RestApiResponse<T> NonSuccess(string error)
+    {
+        return new RestApiResponse<T>()
         {
-            return new RestApiResponse<T>()
-            {
-                IsSuccess = true,
-                Error = error,
-                Result = null,
-            };
-        }
+            IsSuccess = true,
+            Error = error,
+            Result = null,
+        };
     }
 }

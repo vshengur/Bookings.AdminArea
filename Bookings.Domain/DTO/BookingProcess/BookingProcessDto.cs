@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace Bookings.Domain.DTO.BookingProcess;
 
-namespace Bookings.Domain.DTO.BookingProcess
+public class BookingProcessDto
 {
-    public class BookingProcessDto
-    {
-        public string BookingId { get; set; }
+    public required string BookingId { get; set; }
 
-        public Guid CorrelationId { get; set; }
-    }
+    public Guid CorrelationId { get; set; }
 }

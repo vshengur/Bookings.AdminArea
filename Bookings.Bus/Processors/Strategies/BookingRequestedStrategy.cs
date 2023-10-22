@@ -5,45 +5,44 @@ using Bookings.Domain.DTO.BookingProcess;
 
 using MassTransit;
 
-namespace Bookings.Bus.Processors.Strategies
+namespace Bookings.Bus.Processors.Strategies;
+
+public class BookingRequestedStrategy : IBookingStateProcessorStrategy
 {
-    public class BookingRequestedStrategy : IBookingStateProcessorStrategy
+    private readonly IBus bus;
+    private readonly IRequestClient<IBookingRequested> bookingRequestedEventClient;
+
+    public BookingRequestedStrategy(
+        IBus bus,
+        IRequestClient<IBookingRequested> bookingRequestedEventClient)
     {
-        private readonly IBus bus;
-        private readonly IRequestClient<IBookingRequested> bookingRequestedEventClient;
+        this.bus = bus;
+        this.bookingRequestedEventClient = bookingRequestedEventClient;
+    }
 
-        public BookingRequestedStrategy(
-            IBus bus,
-            IRequestClient<IBookingRequested> bookingRequestedEventClient)
+    public async Task<Response<BookingProcessDto>?> Execute(BookingDTO bookingModel)
+    {
+        // Отправка запроса на бронирование
+        var bookingRequestedMessage = new BookingRequested
         {
-            this.bus = bus;
-            this.bookingRequestedEventClient = bookingRequestedEventClient;
+            CorrelationId = Guid.NewGuid(),
+            Timestamp = DateTime.UtcNow,
+
+            // Дополнительные свойства для запроса бронирования
+            BookName = bookingModel.BookName,
+            Category = bookingModel.Category,
+            HotelId = bookingModel.HotelId,
+            Price = bookingModel.Price,
+        };
+
+        if (!bookingModel.IsRequestResponsePattern)
+        {
+            await bus.Publish<IBookingRequested>(bookingRequestedMessage);
+            return null;
         }
 
-        public async Task<Response<BookingProcessDto>?> Execute(BookingDTO bookingModel)
-        {
-            // Отправка запроса на бронирование
-            var bookingRequestedMessage = new BookingRequested
-            {
-                CorrelationId = Guid.NewGuid(),
-                Timestamp = DateTime.UtcNow,
-
-                // Дополнительные свойства для запроса бронирования
-                BookName = bookingModel.BookName,
-                Category = bookingModel.Category,
-                HotelId = bookingModel.HotelId,
-                Price = bookingModel.Price,
-            };
-
-            if (!bookingModel.IsRequestResponsePattern)
-            {
-                await bus.Publish<IBookingRequested>(bookingRequestedMessage);
-                return null;
-            }
-
-            var result = await bookingRequestedEventClient
-                .GetResponse<BookingProcessDto>(bookingRequestedMessage);
-            return result;
-        }
+        var result = await bookingRequestedEventClient
+            .GetResponse<BookingProcessDto>(bookingRequestedMessage);
+        return result;
     }
 }

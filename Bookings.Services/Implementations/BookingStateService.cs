@@ -7,48 +7,47 @@ using Bookings.Services.Interfaces;
 
 using MassTransit;
 
-namespace Bookings.Services.Implementations
+namespace Bookings.Services.Implementations;
+
+/// <summary>
+/// Realization of <seealso cref="IBookingStateService"/>
+/// </summary>
+public class BookingStateService : IBookingStateService
 {
+    private readonly IBus bus;
+    private readonly IRequestClient<IBookingRequested> bookingRequestedEventClient;
+    private readonly IRequestClient<IBookingCancelled> bookingCancelledEventClient;
+    private readonly IRequestClient<IBookingConfirmed> bookingConfirmedEventClient;
+
     /// <summary>
-    /// Realization of <seealso cref="IBookingStateService"/>
+    /// Ctor.
     /// </summary>
-    public class BookingStateService : IBookingStateService
+    /// <param name="bus">Bus abstraction.</param>
+    /// <param name="bookingRequestedEventClient">Client for event <see cref="IBookingRequested"/>.</param>
+    /// <param name="bookingCancelledEventClient">Client for event <see cref="IBookingCancelled"/>.</param>
+    /// <param name="bookingConfirmedEventClient">Client for event <see cref="IBookingConfirmed"/>.</param>
+    public BookingStateService(
+        IBus bus,
+        IRequestClient<IBookingRequested> bookingRequestedEventClient,
+        IRequestClient<IBookingCancelled> bookingCancelledEventClient,
+        IRequestClient<IBookingConfirmed> bookingConfirmedEventClient)
     {
-        private readonly IBus bus;
-        private readonly IRequestClient<IBookingRequested> bookingRequestedEventClient;
-        private readonly IRequestClient<IBookingCancelled> bookingCancelledEventClient;
-        private readonly IRequestClient<IBookingConfirmed> bookingConfirmedEventClient;
+        this.bus = bus;
+        this.bookingRequestedEventClient = bookingRequestedEventClient;
+        this.bookingCancelledEventClient = bookingCancelledEventClient;
+        this.bookingConfirmedEventClient = bookingConfirmedEventClient;
+    }
 
-        /// <summary>
-        /// Ctor.
-        /// </summary>
-        /// <param name="bus">Bus abstraction.</param>
-        /// <param name="bookingRequestedEventClient">Client for event <see cref="IBookingRequested"/>.</param>
-        /// <param name="bookingCancelledEventClient">Client for event <see cref="IBookingCancelled"/>.</param>
-        /// <param name="bookingConfirmedEventClient">Client for event <see cref="IBookingConfirmed"/>.</param>
-        public BookingStateService(
-            IBus bus,
-            IRequestClient<IBookingRequested> bookingRequestedEventClient,
-            IRequestClient<IBookingCancelled> bookingCancelledEventClient,
-            IRequestClient<IBookingConfirmed> bookingConfirmedEventClient)
+    public async Task<Response<BookingProcessDto>?> ProcessRequest(BookingDTO bookingDTO)
+    {
+        IBookingStateProcessorStrategy bookingStateProcessorStrategy = bookingDTO.State switch
         {
-            this.bus = bus;
-            this.bookingRequestedEventClient = bookingRequestedEventClient;
-            this.bookingCancelledEventClient = bookingCancelledEventClient;
-            this.bookingConfirmedEventClient = bookingConfirmedEventClient;
-        }
+            BookingState.Confirmed => new BookingConfirmedStrategy(bus, bookingConfirmedEventClient),
+            BookingState.Cancelled => new BookingCancelledStrategy(bus, bookingCancelledEventClient),
+            _ => new BookingRequestedStrategy(bus, bookingRequestedEventClient),
+        };
 
-        public async Task<Response<BookingProcessDto>?> ProcessRequest(BookingDTO bookingDTO)
-        {
-            IBookingStateProcessorStrategy bookingStateProcessorStrategy = bookingDTO.State switch
-            {
-                BookingState.Confirmed => new BookingConfirmedStrategy(bus, bookingConfirmedEventClient),
-                BookingState.Cancelled => new BookingCancelledStrategy(bus, bookingCancelledEventClient),
-                _ => new BookingRequestedStrategy(bus, bookingRequestedEventClient),
-            };
-
-            BookingStateProcessor bookingStateProcessor = new(bookingStateProcessorStrategy);
-            return await bookingStateProcessor.Proceed(bookingDTO);
-        }
+        BookingStateProcessor bookingStateProcessor = new(bookingStateProcessorStrategy);
+        return await bookingStateProcessor.Proceed(bookingDTO);
     }
 }
