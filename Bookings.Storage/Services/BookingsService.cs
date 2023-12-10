@@ -14,18 +14,15 @@ public class BookingsService : BookingsContract.BookingsContractBase
 {
     private readonly ILogger<BookingsService> _logger;
     private readonly IBookingsRepository bookingsRepository;
-    private readonly IHotelsRepository hotelsRepository;
     private readonly IBus _bus;
 
     public BookingsService(
         IMongoDBContext dBContext,
         IBus bus,
         ILogger<BookingsService> logger,
-        ILogger<BookingsRepository> bookingLogger,
-        ILogger<HotelsRepository> hotelsLogger)
+        ILogger<BookingsRepository> bookingLogger)
     {
         bookingsRepository = new BookingsRepository(dBContext, bookingLogger);
-        hotelsRepository = new HotelsRepository(dBContext, hotelsLogger);
 
         _logger = logger;
         _bus = bus;
