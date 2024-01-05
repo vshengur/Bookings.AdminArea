@@ -1,6 +1,6 @@
 ﻿using Bookings.Bus.Processors.Strategies;
-using Bookings.Domain.DTO;
-using Bookings.Domain.DTO.BookingProcess;
+using Bookings.Domain.Dto;
+using Bookings.Domain.Dto.BookingProcess;
 
 using MassTransit;
 
@@ -46,7 +46,7 @@ public class BookingStateProcessor
     /// </summary>
     /// <param name="bookingDTO"></param>
     /// <returns></returns>
-    public async Task<Response<BookingProcessDto>?> Proceed(BookingDTO bookingDTO)
+    public async Task<Response<BookingProcessDto>?> Proceed(BookingDto bookingDTO)
     {
         return await _strategy.Execute(bookingDTO);
     }

@@ -2,18 +2,17 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-#pragma warning disable SA1200 // Using directives should be placed correctly
+#pragma warning disable SA1200 // Using directives should be placed correctly;
 using Bookings.Bus.Sagas.StateMachine;
 using Bookings.Bus.Sagas.States;
-using Bookings.Services.Implementations;
-using Bookings.Services.Interfaces;
-using Bookings.Web;
+using Bookings.Contracts;
+using Bookings.Infrastructure.Services.Abstractions;
+using Bookings.Infrastructure.Services.Implementations;
 using Grpc.Core;
 using Grpc.Net.Client.Configuration;
 using MassTransit;
 using Microsoft.AspNetCore.Diagnostics;
 using static System.Net.Mime.MediaTypeNames;
-#pragma warning restore SA1200 // Using directives should be placed correctly
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
@@ -69,7 +68,7 @@ var grpcMethodConfig = new MethodConfig()
 
 builder.Services.AddGrpcClient<BookingsContract.BookingsContractClient>(o =>
 {
-    o.Address = new Uri("https://localhost:7073");
+    o.Address = new Uri(builder.Configuration.GetRequiredSection($"StorageEndpoint:Address").Value);
 })
 .ConfigureChannel(o =>
 {
@@ -94,8 +93,6 @@ app.UseExceptionHandler(exceptionHandlerApp =>
     exceptionHandlerApp.Run(async context =>
     {
         context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-
-        // using static System.Net.Mime.MediaTypeNames;
         context.Response.ContentType = Text.Plain;
 
         await context.Response.WriteAsync("An exception was thrown.");
@@ -106,6 +103,12 @@ app.UseExceptionHandler(exceptionHandlerApp =>
         if (exceptionHandlerPathFeature?.Error is FileNotFoundException)
         {
             await context.Response.WriteAsync(" The file was not found.");
+        }
+
+        if (exceptionHandlerPathFeature?.Error is RpcException
+            && ((RpcException)exceptionHandlerPathFeature.Error).StatusCode == StatusCode.DeadlineExceeded)
+        {
+            await context.Response.WriteAsync(" The rpc ex." + exceptionHandlerPathFeature?.Error.Message);
         }
 
         if (exceptionHandlerPathFeature?.Error is RpcException)

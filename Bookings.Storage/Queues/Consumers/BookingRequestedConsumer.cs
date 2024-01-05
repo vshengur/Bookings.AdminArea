@@ -1,5 +1,5 @@
 ﻿using Bookings.Bus.Sagas.Events.Abstractions;
-using Bookings.Domain.DTO.BookingProcess;
+using Bookings.Domain.Dto.BookingProcess;
 using Bookings.Domain;
 using Bookings.Repositories.Domain;
 using MassTransit;
@@ -24,14 +24,17 @@ public class BookingRequestedConsumer : IConsumer<IBookingRequested>
 
     public async Task Consume(ConsumeContext<IBookingRequested> context)
     {
-        _logger.LogInformation(message: "Creating {BookName}", context.Message.BookName);
+        _logger.LogInformation(message: "Creating {BookName}", 
+            context.Message.BookName);
+
+        var hotel = await _hotelsRepository.Get(context.Message.HotelId);
 
         var newItem = new Booking()
         {
             StateId = context.Message.CorrelationId,
             BookName = context.Message.BookName,
             Category = context.Message.Category,
-            Hotel = await _hotelsRepository.Get(context.Message.HotelId),
+            Hotel = hotel,
             Price = context.Message.Price
         };
 

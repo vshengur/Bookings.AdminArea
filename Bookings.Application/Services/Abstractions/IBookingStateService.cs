@@ -1,9 +1,9 @@
-﻿using Bookings.Domain.DTO;
-using Bookings.Domain.DTO.BookingProcess;
+﻿using Bookings.Domain.Dto;
+using Bookings.Domain.Dto.BookingProcess;
 
 using MassTransit;
 
-namespace Bookings.Services.Interfaces;
+namespace Bookings.Infrastructure.Services.Abstractions;
 
 /// <summary>
 /// Booking state service.
@@ -15,5 +15,5 @@ public interface IBookingStateService
     /// </summary>
     /// <param name="bookingDTO">Booking model.</param>
     /// <returns></returns>
-    Task<Response<BookingProcessDto>?> ProcessRequest(BookingDTO bookingDTO);
+    Task<Response<BookingProcessDto>> ProcessRequest(BookingDto bookingDTO);
 }

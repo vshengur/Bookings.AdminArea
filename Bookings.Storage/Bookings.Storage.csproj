@@ -10,10 +10,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Protobuf Include="..\Protos\bookings.proto" GrpcServices="Server" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Grpc.AspNetCore" Version="2.55.0" />
     <PackageReference Include="MassTransit" Version="8.0.16" />
     <PackageReference Include="MassTransit.RabbitMQ" Version="8.0.16" />
@@ -23,6 +19,10 @@
   <ItemGroup>
     <ProjectReference Include="..\Bookings.Bus\Bookings.Bus.csproj" />
     <ProjectReference Include="..\Bookings.Repositories\Bookings.Repositories.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="..\Protos\bookings.proto" GrpcServices="Server" />
   </ItemGroup>
 
 </Project>

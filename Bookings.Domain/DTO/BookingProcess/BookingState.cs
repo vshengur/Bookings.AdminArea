@@ -1,4 +1,4 @@
-﻿namespace Bookings.Domain.DTO.BookingProcess;
+﻿namespace Bookings.Domain.Dto.BookingProcess;
 
 public enum BookingState
 {

@@ -1,6 +1,6 @@
-﻿namespace Bookings.Domain.DTO;
+﻿namespace Bookings.Domain.Dto;
 
-public class HotelDTO
+public class HotelDto
 {
     public string Name { get; set; }
 

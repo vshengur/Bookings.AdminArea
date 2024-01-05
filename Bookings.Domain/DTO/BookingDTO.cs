@@ -1,13 +1,13 @@
-﻿using Bookings.Domain.DTO.BookingProcess;
+﻿using Bookings.Domain.Dto.BookingProcess;
 
-namespace Bookings.Domain.DTO;
+namespace Bookings.Domain.Dto;
 
-public record BaseRequestResponseDTO
+public record BaseRequestResponseDto
 {
     public bool IsRequestResponsePattern { get; set; }
 }
 
-public record BookingDTO : BaseRequestResponseDTO
+public record BookingDto : BaseRequestResponseDto
 {
     public double Price { get; set; }
 

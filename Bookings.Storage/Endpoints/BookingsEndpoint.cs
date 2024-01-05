@@ -1,8 +1,8 @@
+using Bookings.Contracts;
 using Bookings.Domain;
 using Bookings.Repositories.Contexts;
 using Bookings.Repositories.Domain;
 using Bookings.Repositories.Domain.Interfaces;
-using Bookings.Web;
 
 using Grpc.Core;
 
@@ -10,16 +10,16 @@ using MassTransit;
 
 namespace Bookings.Storage.Services;
 
-public class BookingsService : BookingsContract.BookingsContractBase
+public class BookingsEndpoint : BookingsContract.BookingsContractBase
 {
-    private readonly ILogger<BookingsService> _logger;
+    private readonly ILogger<BookingsEndpoint> _logger;
     private readonly IBookingsRepository bookingsRepository;
     private readonly IBus _bus;
 
-    public BookingsService(
+    public BookingsEndpoint(
         IMongoDBContext dBContext,
         IBus bus,
-        ILogger<BookingsService> logger,
+        ILogger<BookingsEndpoint> logger,
         ILogger<BookingsRepository> bookingLogger)
     {
         bookingsRepository = new BookingsRepository(dBContext, bookingLogger);

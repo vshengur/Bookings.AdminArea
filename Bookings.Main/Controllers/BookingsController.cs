@@ -5,8 +5,9 @@
 namespace Bookings.Web.Controllers;
 
 using Bookings.Bus.Queues.Messages;
-using Bookings.Domain.DTO;
-using Bookings.Services.Interfaces;
+using Bookings.Contracts;
+using Bookings.Domain.Dto;
+using Bookings.Infrastructure.Services.Abstractions;
 using Bookings.Web.Models.Responses;
 
 using Grpc.Core;
@@ -22,25 +23,25 @@ using Microsoft.AspNetCore.Mvc;
 [Route("api/[controller]")]
 public class BookingsController : ControllerBase
 {
-    private readonly BookingsContract.BookingsContractClient grpcBookingClient;
     private readonly ILogger<BookingsController> logger;
+    private readonly IBookingService bookingService;
     private readonly IBookingStateService bookingStateService;
     private readonly IBus bus;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BookingsController"/> class.
     /// </summary>
-    /// <param name="grpcBookingClient">gRPC booking client.</param>
     /// <param name="logger">Some logger.</param>
     /// <param name="bookingStateService">BookingStateService abstraction.</param>
+    /// <param name="bus">Bus abstraction.</param>
     public BookingsController(
-        BookingsContract.BookingsContractClient grpcBookingClient,
         ILogger<BookingsController> logger,
+        IBookingService bookingService,
         IBookingStateService bookingStateService,
         IBus bus)
     {
-        this.grpcBookingClient = grpcBookingClient;
         this.logger = logger;
+        this.bookingService = bookingService;
         this.bookingStateService = bookingStateService;
         this.bus = bus;
     }
@@ -50,17 +51,11 @@ public class BookingsController : ControllerBase
     /// </summary>
     /// <returns>Список заказов.</returns>
     [HttpGet]
-    public async Task<RestApiResponse<BookingsResponse>> GetAsync()
+    public async Task<RestApiResponse<BookingsResponse>> GetAsync([FromQuery] int page = 0, [FromQuery] int count = 30)
     {
         try
         {
-            var bookings = await this.grpcBookingClient.GetBookingsAsync(
-                new BookingsRequest
-                {
-                    Count = 30,
-                    Page = 0,
-                },
-                deadline: DateTime.UtcNow.AddSeconds(10));
+            var bookings = await bookingService.GetBookingsAsync(page, count);
 
             return RestApiResponse<BookingsResponse>.Success(bookings);
         }
@@ -77,7 +72,7 @@ public class BookingsController : ControllerBase
     /// <param name="bookingModel">Модель нового бронирования.</param>
     /// <returns>Результат оформления операции.</returns>
     [HttpPost]
-    public async Task<IActionResult> PostAsync([FromBody] BookingDTO bookingModel)
+    public async Task<IActionResult> PostAsync([FromBody] BookingDto bookingModel)
     {
         var result = await bookingStateService.ProcessRequest(bookingModel);
 
@@ -90,7 +85,7 @@ public class BookingsController : ControllerBase
     /// <param name="bookingModel">Модель нового бронирования.</param>
     /// <returns>Результат оформления операции.</returns>
     [HttpPut]
-    public async Task<IActionResult> PutAsync([FromBody] BookingDTO bookingModel)
+    public async Task<IActionResult> PutAsync([FromBody] BookingDto bookingModel)
     {
         var result = await bookingStateService.ProcessRequest(bookingModel);
 
@@ -105,7 +100,7 @@ public class BookingsController : ControllerBase
     /// <returns>Результат оформления операции.</returns>
     [HttpPut]
     [Route("api/[controller]/{id}")]
-    public async Task PutAsync(string id, [FromBody] BookingDTO bookingModel)
+    public async Task PutAsync(string id, [FromBody] BookingDto bookingModel)
     {
         var newItem = new UpdateBookingMessage()
         {

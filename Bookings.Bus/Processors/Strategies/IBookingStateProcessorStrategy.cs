@@ -1,5 +1,5 @@
-﻿using Bookings.Domain.DTO;
-using Bookings.Domain.DTO.BookingProcess;
+﻿using Bookings.Domain.Dto;
+using Bookings.Domain.Dto.BookingProcess;
 
 using MassTransit;
 
@@ -18,5 +18,5 @@ public interface IBookingStateProcessorStrategy
     /// </summary>
     /// <param name="bookingModel">Модель с данными бронирования.</param>
     /// <returns></returns>
-    Task<Response<BookingProcessDto>?> Execute(BookingDTO bookingModel);
+    Task<Response<BookingProcessDto>?> Execute(BookingDto bookingModel);
 }

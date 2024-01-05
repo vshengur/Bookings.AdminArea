@@ -75,7 +75,7 @@ builder.Services.AddMassTransit(x =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-app.MapGrpcService<BookingsService>();
+app.MapGrpcService<BookingsEndpoint>();
 app.MapGet("/", 
     () => "Communication with gRPC endpoints must be made through a gRPC client. " +
     "To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");

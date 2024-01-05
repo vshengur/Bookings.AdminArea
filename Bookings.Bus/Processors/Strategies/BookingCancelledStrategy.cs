@@ -1,7 +1,7 @@
 ﻿using Bookings.Bus.Sagas.Events.Abstractions;
 using Bookings.Bus.Sagas.Events.Realizations;
-using Bookings.Domain.DTO;
-using Bookings.Domain.DTO.BookingProcess;
+using Bookings.Domain.Dto;
+using Bookings.Domain.Dto.BookingProcess;
 
 using MassTransit;
 
@@ -20,7 +20,7 @@ public class BookingCancelledStrategy : IBookingStateProcessorStrategy
         this.bookingCancelledEventClient = bookingCancelledEventClient;
     }
 
-    public async Task<Response<BookingProcessDto>?> Execute(BookingDTO bookingModel)
+    public async Task<Response<BookingProcessDto>?> Execute(BookingDto bookingModel)
     {
         // Отправка запроса на бронирование
         var bookingCancelledMessage = new BookingCancelled
@@ -44,6 +44,7 @@ public class BookingCancelledStrategy : IBookingStateProcessorStrategy
 
         var result = await bookingCancelledEventClient
             .GetResponse<BookingProcessDto>(bookingCancelledMessage);
+
         return result;
     }
 }

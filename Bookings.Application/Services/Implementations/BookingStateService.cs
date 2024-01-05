@@ -1,13 +1,13 @@
 ﻿using Bookings.Bus.Processors;
 using Bookings.Bus.Processors.Strategies;
 using Bookings.Bus.Sagas.Events.Abstractions;
-using Bookings.Domain.DTO;
-using Bookings.Domain.DTO.BookingProcess;
-using Bookings.Services.Interfaces;
+using Bookings.Domain.Dto;
+using Bookings.Domain.Dto.BookingProcess;
+using Bookings.Infrastructure.Services.Abstractions;
 
 using MassTransit;
 
-namespace Bookings.Services.Implementations;
+namespace Bookings.Infrastructure.Services.Implementations;
 
 /// <summary>
 /// Realization of <seealso cref="IBookingStateService"/>
@@ -38,7 +38,7 @@ public class BookingStateService : IBookingStateService
         this.bookingConfirmedEventClient = bookingConfirmedEventClient;
     }
 
-    public async Task<Response<BookingProcessDto>?> ProcessRequest(BookingDTO bookingDTO)
+    public async Task<Response<BookingProcessDto>> ProcessRequest(BookingDto bookingDTO)
     {
         IBookingStateProcessorStrategy bookingStateProcessorStrategy = bookingDTO.State switch
         {

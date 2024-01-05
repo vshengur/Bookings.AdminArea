@@ -1,7 +1,7 @@
 ﻿using Bookings.Bus.Sagas.Events.Abstractions;
 using Bookings.Bus.Sagas.Events.Realizations;
-using Bookings.Domain.DTO;
-using Bookings.Domain.DTO.BookingProcess;
+using Bookings.Domain.Dto;
+using Bookings.Domain.Dto.BookingProcess;
 
 using MassTransit;
 
@@ -20,7 +20,7 @@ public class BookingConfirmedStrategy : IBookingStateProcessorStrategy
         this.bookingConfirmedEventClient = bookingConfirmedEventClient;
     }
 
-    public async Task<Response<BookingProcessDto>?> Execute(BookingDTO bookingModel)
+    public async Task<Response<BookingProcessDto>?> Execute(BookingDto bookingModel)
     {
         // Отправка запроса на бронирование
         var bookingConfirmedMessage = new BookingConfirmed
