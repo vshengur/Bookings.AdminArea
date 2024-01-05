@@ -9,9 +9,9 @@ services:
       - proxy
     ports:
       - 8080:80
-    depends_on:
-      - bookings-db
-      - rabbitMQ
+#    depends_on:
+#      - bookings-db
+#      - rabbitMQ
     environment:
       Bookings_Storage_DB_USER: "${BOOKINGS_DB_USER}"
       Bookings_Storage_DB_PASSWORD: "${BOOKINGS_DB_PASSWORD}"
@@ -20,41 +20,6 @@ services:
       Bookings_Storage_RabbitMq_Host: "${MAIN_SERVER_ADDRESS}"
       Bookings_Storage_RabbitMq_User: "${RABBITMQ_USER}"
       Bookings_Storage_RabbitMq_Password: "${RABBITMQ_PASSWORD}"
-
-  bookings-db:
-    restart: always
-    image: mongo:6.0.7
-    command: --bind_ip_all
-    volumes:
-        - ./data/bookings-data:/data/db
-    environment:  
-        MONGO_INITDB_ROOT_USERNAME: "${BOOKINGS_DB_USER}"
-        MONGO_INITDB_ROOT_PASSWORD: "${BOOKINGS_DB_PASSWORD}"
-    networks:
-      - proxy
-    ports:
-      - 27017:27017
-
-  rabbitMQ:
-    image: rabbitmq:3.12-management
-    hostname: rabbitmq
-    container_name: rabbitmq
-    labels:
-      NAME: "rabbitmq"
-    environment:
-      RABBITMQ_DEFAULT_VHOST: "/"
-      RABBITMQ_DEFAULT_USER: "${RABBITMQ_USER}"
-      RABBITMQ_DEFAULT_PASS: "${RABBITMQ_PASSWORD}"
-    networks:
-      - proxy
-    ports:
-      - 10000:15672
-      - 5672:5672
-    volumes:
-      - ./data/rabbitmq:/var/lib/rabbitmq
-
-volumes:
-  bookings-data:
   
 networks:
   proxy:

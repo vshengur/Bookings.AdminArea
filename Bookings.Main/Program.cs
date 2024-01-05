@@ -17,7 +17,7 @@ using static System.Net.Mime.MediaTypeNames;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
-builder.Configuration.AddEnvironmentVariables(prefix: "Api_Storage_");
+builder.Configuration.AddEnvironmentVariables(prefix: "Api_");
 
 builder.Services.AddMassTransit(x =>
 {

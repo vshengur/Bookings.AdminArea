@@ -13,13 +13,13 @@ services:
 #      - api-db
 #      - api-rabbitMQ
 #    environment:
-#      Api_Storage_DB_USER: "${BOOKINGS_DB_USER}"
-#      Api_Storage_DB_PASSWORD: "${BOOKINGS_DB_PASSWORD}"
-#      Api_Storage_DB_HOST: "${MAIN_SERVER_ADDRESS}"
-#      Api_Storage_DB_PORT: "${BOOKINGS_DB_PORT}"
-#      Api_Storage_RabbitMq_Host: "${MAIN_SERVER_ADDRESS}"
-#      Api_Storage_RabbitMq_User: "${RABBITMQ_USER}"
-#      Api_Storage_RabbitMq_Password: "${RABBITMQ_PASSWORD}"
+#      Bookings_Storage__DB_USER: "${BOOKINGS_DB_USER}"
+#      Bookings_Storage__DB_PASSWORD: "${BOOKINGS_DB_PASSWORD}"
+#      Bookings_Storage__DB_HOST: "${MAIN_SERVER_ADDRESS}"
+#      Bookings_Storage__DB_PORT: "${BOOKINGS_DB_PORT}"
+#      Bookings_Storage__RabbitMq_Host: "${MAIN_SERVER_ADDRESS}"
+#      Bookings_Storage__RabbitMq_User: "${RABBITMQ_USER}"
+#      Bookings_Storage__RabbitMq_Password: "${RABBITMQ_PASSWORD}"
 
   bookings-db:
     restart: always

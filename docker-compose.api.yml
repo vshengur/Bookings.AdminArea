@@ -1,60 +1,26 @@
 version: '3.8'
 
-services:
-  bookings-storage:
+services:      
+  bookings-api:
     build:
       context: .
-      dockerfile: Bookings.Storage/Dockerfile
+      dockerfile: Bookings.Main/Dockerfile
     networks:
       - proxy
     ports:
       - 8081:80
-    depends_on:
-      - api-db
-      - api-rabbitMQ
+#    depends_on:
+#      - bookings-db
+#      - rabbitMQ
     environment:
-      Api_Storage_DB_USER: "${BOOKINGS_DB_USER}"
-      Api_Storage_DB_PASSWORD: "${BOOKINGS_DB_PASSWORD}"
-      Api_Storage_DB_HOST: "${MAIN_SERVER_ADDRESS}"
-      Api_Storage_DB_PORT: "${BOOKINGS_DB_PORT}"
-      Api_Storage_RabbitMq_Host: "${MAIN_SERVER_ADDRESS}"
-      Api_Storage_RabbitMq_User: "${RABBITMQ_USER}"
-      Api_Storage_RabbitMq_Password: "${RABBITMQ_PASSWORD}"
-
-  bookings-db:
-    restart: always
-    image: mongo:6.0.7
-    command: --bind_ip_all
-    volumes:
-        - ./data/bookings-data:/data/db
-    environment:  
-        MONGO_INITDB_ROOT_USERNAME: "${BOOKINGS_DB_USER}"
-        MONGO_INITDB_ROOT_PASSWORD: "${BOOKINGS_DB_PASSWORD}"
-    networks:
-      - proxy
-    ports:
-      - 27017:27017
-
-  rabbitMQ:
-    image: rabbitmq:3.12-management
-    hostname: rabbitmq
-    container_name: rabbitmq
-    labels:
-      NAME: "rabbitmq"
-    environment:
-      RABBITMQ_DEFAULT_VHOST: "/"
-      RABBITMQ_DEFAULT_USER: "${RABBITMQ_USER}"
-      RABBITMQ_DEFAULT_PASS: "${RABBITMQ_PASSWORD}"
-    networks:
-      - proxy
-    ports:
-      - 10000:15672
-      - 5672:5672
-    volumes:
-      - ./data/rabbitmq:/var/lib/rabbitmq
-
-volumes:
-  bookings-data:
+      Api_DB_USER: "${BOOKINGS_DB_USER}"
+      Api_DB_PASSWORD: "${BOOKINGS_DB_PASSWORD}"
+      Api_DB_HOST: "${MAIN_SERVER_ADDRESS}"
+      Api_DB_PORT: "${BOOKINGS_DB_PORT}"
+      Api_RabbitMq_Host: "${MAIN_SERVER_ADDRESS}"
+      Api_RabbitMq_User: "${RABBITMQ_USER}"
+      Api_RabbitMq_Password: "${RABBITMQ_PASSWORD}"
+      Api_StorageEndpoint_Address: "${MAIN_SERVER_ADDRESS}:8080"
   
 networks:
   proxy:
