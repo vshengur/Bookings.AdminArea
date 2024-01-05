@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bookings.Storage", "Booking
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bookings.AvailableRooms", "Bookings.AvailableRooms\Bookings.AvailableRooms.csproj", "{7DE76079-B591-466A-97F1-A52064BDD41B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bookings.Api", "Bookings.Main\Bookings.Api.csproj", "{1513DBF3-C2F2-4AF7-90CD-135EC2778E1D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bookings.Api", "Bookings.Api\Bookings.Api.csproj", "{1513DBF3-C2F2-4AF7-90CD-135EC2778E1D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bookings.Bus", "Bookings.Bus\Bookings.Bus.csproj", "{C5E00AD1-4B8E-4C7E-9F80-48CCFE42841C}"
 EndProject
@@ -25,7 +25,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bookings.Infrastructure", "Bookings.Application\Bookings.Infrastructure.csproj", "{873137F2-8B84-4E68-844F-697ABC19B1AC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bookings.Infrastructure", "Bookings.Infrastructure\Bookings.Infrastructure.csproj", "{873137F2-8B84-4E68-844F-697ABC19B1AC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Protos", "Protos", "{01B0CDA1-7B28-4640-A33C-11F5EA182D84}"
 	ProjectSection(SolutionItems) = preProject

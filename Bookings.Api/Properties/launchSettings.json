@@ -6,13 +6,13 @@
       "launchUrl": "swagger",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "Api_Storage_DB_USER": "root",
-        "Api_Storage_DB_PASSWORD": "fw324fe",
-        "Api_Storage_DB_HOST": "localhost",
-        "Api_Storage_DB_PORT": "27017",
-        "Api_Storage_RabbitMq_Host": "localhost",
-        "Api_Storage_RabbitMq_User": "guest",
-        "Api_Storage_RabbitMq_Password": "guest"
+        "Api_DB_USER": "root",
+        "Api_DB_PASSWORD": "fw324fe",
+        "Api_DB_HOST": "localhost",
+        "Api_DB_PORT": "27017",
+        "Api_RabbitMq_Host": "localhost",
+        "Api_RabbitMq_User": "guest",
+        "Api_RabbitMq_Password": "guest"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:7183;http://localhost:5183"

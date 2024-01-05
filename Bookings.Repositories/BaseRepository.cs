@@ -55,14 +55,27 @@ public abstract class BaseRepository<TEntity>
         return await (await _dbCollection.FindAsync(_ => _.Id == id)).FirstOrDefaultAsync();
     }
 
-    public async Task<IEnumerable<TEntity>> Get()
+    public Task<List<TEntity>> Get(int pageNumber, int pageSize)
     {
-        var all = await _dbCollection.FindAsync(Builders<TEntity>.Filter.Empty);
-        return await all.ToListAsync();
+        // Определение фильтра (например, пустой фильтр для получения всех документов)
+        var filter = Builders<TEntity>.Filter.Empty;
+
+        // Определение сортировки по _id в порядке возрастания
+        var sort = Builders<TEntity>.Sort.Ascending("_id");
+
+        // Запрос с фильтром и лимитом для получения страницы
+        var result = _dbCollection
+            .Find(filter)
+            .Sort(sort)
+            .Skip(pageNumber * pageSize)
+            .Limit(pageSize);
+
+        return result.ToListAsync();
     }
 
     public void Update(TEntity obj)
     {
-        _dbCollection.ReplaceOneAsync(Builders<TEntity>.Filter.Eq("_id", obj.Id), obj);
+        _dbCollection
+            .ReplaceOneAsync(Builders<TEntity>.Filter.Eq("_id", obj.Id), obj);
     }
 }

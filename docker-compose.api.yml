@@ -4,7 +4,7 @@ services:
   bookings-api:
     build:
       context: .
-      dockerfile: Bookings.Main/Dockerfile
+      dockerfile: Bookings.Api/Dockerfile
     networks:
       - proxy
     ports:

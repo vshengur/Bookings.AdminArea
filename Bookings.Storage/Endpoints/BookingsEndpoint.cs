@@ -38,7 +38,7 @@ public class BookingsEndpoint : BookingsContract.BookingsContractBase
         }
         else
         {
-            bookings = await bookingsRepository.Get();
+            bookings = await bookingsRepository.Get(request.Page, request.Count);
         }
 
         if (bookings == null)

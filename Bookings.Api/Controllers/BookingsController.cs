@@ -33,6 +33,7 @@ public class BookingsController : ControllerBase
     /// </summary>
     /// <param name="logger">Some logger.</param>
     /// <param name="bookingStateService">BookingStateService abstraction.</param>
+    /// <param name="bookingService">BookingService abstraction.</param>
     /// <param name="bus">Bus abstraction.</param>
     public BookingsController(
         ILogger<BookingsController> logger,
@@ -56,6 +57,27 @@ public class BookingsController : ControllerBase
         try
         {
             var bookings = await bookingService.GetBookingsAsync(page, count);
+
+            return RestApiResponse<BookingsResponse>.Success(bookings);
+        }
+        catch (RpcException ex) when (ex.StatusCode == Grpc.Core.StatusCode.DeadlineExceeded)
+        {
+            // Обработаем таймаут операции
+            return RestApiResponse<BookingsResponse>.NonSuccess(ex.Message);
+        }
+    }
+
+    /// <summary>
+    /// Получить список заказаов.
+    /// </summary>
+    /// <returns>Список заказов.</returns>
+    [HttpGet]
+    [Route("details")]
+    public async Task<RestApiResponse<BookingsResponse>> GetDeatailsAsync([FromQuery] string id)
+    {
+        try
+        {
+            var bookings = await bookingService.GetBookingsAsync(id);
 
             return RestApiResponse<BookingsResponse>.Success(bookings);
         }

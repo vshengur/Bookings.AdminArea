@@ -16,8 +16,7 @@ public class RestApiResponse<T>
     /// <summary>
     /// s.
     /// </summary>
-    /// <param name="data"></param>
-    /// <returns></returns>
+    /// <param name="data">Data to wrap.</param>
     public static RestApiResponse<T> Success(T data)
     {
         return new RestApiResponse<T>()
@@ -31,7 +30,7 @@ public class RestApiResponse<T>
     {
         return new RestApiResponse<T>()
         {
-            IsSuccess = true,
+            IsSuccess = false,
             Error = error,
             Result = null,
         };

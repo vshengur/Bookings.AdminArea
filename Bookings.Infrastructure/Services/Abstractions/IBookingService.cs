@@ -14,4 +14,12 @@ public interface IBookingService
     /// <param name="count"></param>
     /// <returns></returns>
     Task<BookingsResponse> GetBookingsAsync(int page = 0, int count = 30);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="page"></param>
+    /// <param name="count"></param>
+    /// <returns></returns>
+    Task<BookingsResponse> GetBookingsAsync(string id);
 }

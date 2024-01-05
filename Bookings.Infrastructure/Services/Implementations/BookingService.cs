@@ -28,4 +28,16 @@ public class BookingService(BookingsContract.BookingsContractClient grpcBookingC
 
         return bookings;
     }
+
+    public async Task<BookingsResponse> GetBookingsAsync(string id)
+    {
+        var bookings = await grpcBookingClient.GetBookingsAsync(
+            new BookingsRequest
+            {
+                Id = id
+            },
+            deadline: DateTime.UtcNow.AddSeconds(10));
+
+        return bookings;
+    }
 }
