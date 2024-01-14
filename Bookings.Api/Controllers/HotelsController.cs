@@ -14,89 +14,16 @@ using Microsoft.AspNetCore.Mvc;
 /// <summary>
 /// Контроллер упралвения заказами.
 /// </summary>
+/// <remarks>
+/// Initializes a new instance of the <see cref="HotelsController"/> class.
+/// </remarks>
+/// <param name="client">GRPC client.</param>
+/// <param name="logger">Some logger.</param>
+/// <param name="bus">Bus abstraction.</param>
 [ApiController]
 [Route("api/[controller]")]
-public class HotelsController : ControllerBase
+public class HotelsController(ILogger<HotelsController> logger, IBus bus) : ControllerBase
 {
-    private readonly ILogger<HotelsController> _logger;
-    private readonly IBus _bus;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="HotelsController"/> class.
-    /// </summary>
-    /// <param name="client">GRPC client.</param>
-    /// <param name="logger">Some logger.</param>
-    /// <param name="bus">Bus abstraction.</param>
-    public HotelsController(
-        ILogger<HotelsController> logger,
-        IBus bus)
-    {
-        _logger = logger;
-        _bus = bus;
-    }
-
-    /// <summary>
-    /// Создать новую запись о бронировании.
-    /// </summary>
-    /// <returns>Результат оформления операции.</returns>
-    [HttpPost]
-    [Route("populate")]
-    public async Task PopulateAsync([FromQuery]int count = 1_000)
-    {
-        var cities = new string[10]
-        {
-            "Los-Angeles, USA", "Saint-Petersburg, Russia", "Ottawa, Canada",
-            "Cologne, Germany", "Herceg-Novi, Montenegro", "Marcel, France",
-            "Venice, Italy", "São Paulo, Brasil", "Mombasa, Kenia", "Muharraq, Bahrain",
-        };
-        var abbr = new string[]
-        {
-            "Fashionable", "Excellent", "Unique", "Mysterious", "Unique", 
-            "Graceful", "Isolated", "Secretive", "For lovers", "Memorable",
-        };
-
-        for (var i = 0; i < count; i++)
-        {
-            var city = cities[GetRandom().Next(0, cities.Length)];
-            var bookingModel = new HotelDto()
-            {
-                City = city,
-                LocationX = GetRandom().NextDouble() * 90,
-                LocationY = GetRandom().NextDouble() * 90,
-                Name = abbr[GetRandom().Next(0, abbr.Length)] + " hotel at " + city,
-                RoomsCount = GetRandom().Next(0, 2) == 1 ? 1 : GetRandom().Next(1, 50),
-                Stars = GetRandom().Next(1, 6),
-            };
-
-            if (GetRandom().Next(0, 2) == 1)
-            {
-                bookingModel.LocationX = -bookingModel.LocationX;
-            }
-
-            if (GetRandom().Next(0, 2) == 0)
-            {
-                bookingModel.LocationY = -bookingModel.LocationY;
-            }
-
-            var newItem = new CreateHotelMessage()
-            {
-                City = bookingModel.City,
-                Name = bookingModel.Name,
-                Stars = bookingModel.Stars,
-                RoomsCount = bookingModel.RoomsCount,
-                LocationX = bookingModel.LocationX,
-                LocationY = bookingModel.LocationY,
-            };
-
-            await _bus.Publish(newItem).ConfigureAwait(false);
-        }
-
-        Random GetRandom()
-        {
-            return new Random((int)DateTime.Now.Ticks);
-        }
-    }
-
     /// <summary>
     /// Создать новую запись о бронировании.
     /// </summary>
@@ -108,33 +35,163 @@ public class HotelsController : ControllerBase
         var newItem = new CreateHotelMessage()
         {
             City = bookingModel.City,
+            Country = bookingModel.Country,
             Name = bookingModel.Name,
             Stars = bookingModel.Stars,
-            RoomsCount = bookingModel.RoomsCount,
+            Rate = bookingModel.Rate,
             LocationX = bookingModel.LocationX,
             LocationY = bookingModel.LocationY,
         };
 
-        await _bus.Publish(newItem).ConfigureAwait(false);
+        await bus.Publish(newItem).ConfigureAwait(false);
     }
 
     /// <summary>
     /// Обновить запись о бронировании.
     /// </summary>
-    /// <param name="id">Идентификатор бронирования.</param>
-    /// <param name="bookingModel">Модель нового бронирования.</param>
+    /// <param name="id">Идентификатор отеля.</param>
+    /// <param name="model">Данные отеля.</param>
     /// <returns>Результат оформления операции.</returns>
     [HttpPut]
     [Route("api/[controller]/{id}")]
-    public async Task PutAsync(string id, [FromBody] HotelDto bookingModel)
+    public async Task PutAsync(string id, [FromBody] HotelDto model)
     {
         var newItem = new UpdateHotelMessage()
         {
-            Name = bookingModel.Name,
-            Stars = bookingModel.Stars,
-            RoomsCount = bookingModel.RoomsCount,
+            HotelId = id,
+            Name = model.Name,
+            Stars = model.Stars,
+            Rate = model.Rate,
         };
 
-        await _bus.Send(newItem).ConfigureAwait(false);
+        await bus.Send(newItem).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Создать новую запись о бронировании.
+    /// </summary>
+    /// <param name="count">Количество отелей.</param>
+    /// <returns>Результат оформления операции.</returns>
+    [HttpPost]
+    [Route("populate")]
+    public async Task PopulateAsync([FromQuery] int count = 100)
+    {
+        var cities = new (string Name, string Country)[10]
+        {
+            ("Los-Angeles", "USA"), ("Saint-Petersburg", "Russia"), ("Ottawa", "Canada"),
+            ("Cologne", "Germany"), ("Herceg-Novi", "Montenegro"), ("Marcel", "France"),
+            ("Venice", "Italy"), ("São Paulo", "Brasil"), ("Mombasa", "Kenia"), ("Muharraq", "Bahrain"),
+        };
+        var abbr = new string[]
+        {
+            "Fashionable", "Excellent", "Mysterious", "Unique",
+            "Graceful", "Isolated", "Secretive", "For lovers", "Memorable",
+        };
+
+        for (var i = 0; i < count; i++)
+        {
+            var city = cities[GetRandom().Next(0, cities.Length)];
+
+            var hotelModel = new CreateHotelMessage()
+            {
+                City = city.Name,
+                Country = city.Country,
+                LocationX = GetRandom().NextDouble() * 90,
+                LocationY = GetRandom().NextDouble() * 90,
+                Name = abbr[GetRandom().Next(0, abbr.Length)] + " hotel at " + city,
+                Rate = GetRandom().Next(0, 2) == 1 ? 9 : GetRandom().Next(1, 11),
+                Stars = GetRandom().Next(1, 6),
+            };
+
+            if (GetRandom().Next(0, 2) == 1)
+            {
+                hotelModel.LocationX = -hotelModel.LocationX;
+            }
+
+            if (GetRandom().Next(0, 2) == 0)
+            {
+                hotelModel.LocationY = -hotelModel.LocationY;
+            }
+
+            await bus.Publish(hotelModel).ConfigureAwait(false);
+        }
+
+        static Random GetRandom() => new((int)DateTime.Now.Ticks);
+    }
+
+    /// <summary>
+    /// Создать новую запись о бронировании.
+    /// </summary>
+    /// <param name="id">Идентификатор отеля.</param>
+    /// <param name="model">Данные номера отеля.</param>
+    /// <returns>Результат оформления операции.</returns>
+    [HttpPost]
+    [Route("api/[controller]/{id}/rooms")]
+    public async Task PostRoomAsync(string id, [FromBody] RoomDto model)
+    {
+        var newItem = new CreateRoomMessage()
+        {
+            Name = model.Name,
+            AdditionalFreeKids = model.AdditionalFreeKids,
+            HotelId = id,
+            MaxPersons = model.MaxPersons,
+        };
+
+        await bus.Publish(newItem).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Обновить запись о бронировании.
+    /// </summary>
+    /// <param name="id">Идентификатор отеля.</param>
+    /// <param name="roomId">Идентификатор номера отеля.</param>
+    /// <param name="model">Данные номера отеля.</param>
+    /// <returns>Результат оформления операции.</returns>
+    [HttpPut]
+    [Route("api/[controller]/{id}/rooms/{roomId}")]
+    public async Task PutRoomAsync(string id, string roomId, [FromBody] RoomDto model)
+    {
+        var newItem = new UpdateRoomMessage()
+        {
+            HotelId = id,
+            RoomId = roomId,
+            Name = model.Name,
+            MaxPersons = model.MaxPersons,
+            AdditionalFreeKids = model.AdditionalFreeKids,
+        };
+
+        await bus.Send(newItem).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Создать новую запись о бронировании.
+    /// </summary>
+    /// <param name="id">Идентификатор отеля.</param>
+    /// <param name="maxCount">Максимальное количество номеров в отелей.</param>
+    /// <returns>Результат оформления операции.</returns>
+    [HttpPost]
+    [Route("api/[controller]/{id}/rooms/populate")]
+    public async Task PopulateRoomsAsync(string id, [FromQuery] int maxCount = 5)
+    {
+        var abbr = new string[]
+        {
+            "Fashionable", "Excellent", "Mysterious", "Unique",
+            "Graceful", "Isolated", "Secretive", "For lovers", "Memorable",
+        };
+
+        for (var i = 0; i < GetRandom().Next(1, maxCount + 1); i++)
+        {
+            var hotelModel = new CreateRoomMessage()
+            {
+                AdditionalFreeKids = GetRandom().Next(0, 3),
+                MaxPersons = GetRandom().Next(0, 5),
+                HotelId = id,
+                Name = abbr[GetRandom().Next(0, abbr.Length)] + " room",
+            };
+
+            await bus.Publish(hotelModel).ConfigureAwait(false);
+        }
+
+        static Random GetRandom() => new((int)DateTime.Now.Ticks);
     }
 }

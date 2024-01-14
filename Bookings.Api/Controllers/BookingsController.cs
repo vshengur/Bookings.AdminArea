@@ -5,12 +5,8 @@
 namespace Bookings.Web.Controllers;
 
 using Bookings.Bus.Queues.Messages;
-using Bookings.Contracts;
 using Bookings.Domain.Dto;
 using Bookings.Infrastructure.Services.Abstractions;
-using Bookings.Web.Models.Responses;
-
-using Grpc.Core;
 
 using MassTransit;
 
@@ -24,7 +20,7 @@ using Microsoft.AspNetCore.Mvc;
 public class BookingsController : ControllerBase
 {
     private readonly ILogger<BookingsController> logger;
-    private readonly IBookingService bookingService;
+    // private readonly IBookingService bookingService;
     private readonly IBookingStateService bookingStateService;
     private readonly IBus bus;
 
@@ -37,16 +33,17 @@ public class BookingsController : ControllerBase
     /// <param name="bus">Bus abstraction.</param>
     public BookingsController(
         ILogger<BookingsController> logger,
-        IBookingService bookingService,
+        //IBookingService bookingService,
         IBookingStateService bookingStateService,
         IBus bus)
     {
         this.logger = logger;
-        this.bookingService = bookingService;
+        //this.bookingService = bookingService;
         this.bookingStateService = bookingStateService;
         this.bus = bus;
     }
 
+    /*
     /// <summary>
     /// Получить список заказаов.
     /// </summary>
@@ -88,6 +85,8 @@ public class BookingsController : ControllerBase
         }
     }
 
+    */
+
     /// <summary>
     /// Создать новую запись о бронировании.
     /// </summary>
@@ -104,12 +103,35 @@ public class BookingsController : ControllerBase
     /// <summary>
     /// Создать новую запись о бронировании.
     /// </summary>
-    /// <param name="bookingModel">Модель нового бронирования.</param>
-    /// <returns>Результат оформления операции.</returns>
-    [HttpPut]
-    public async Task<IActionResult> PutAsync([FromBody] BookingDto bookingModel)
+    /// <param name="id">Идентификатор бронирования.</param>
+    /// <returns>Результат операции.</returns>
+    [HttpPut, Route("api/[controller]/{id}/cancel")]
+    public async Task<IActionResult> CancelBooking(string id)
     {
-        var result = await bookingStateService.ProcessRequest(bookingModel);
+        var result = await bookingStateService.ProcessRequest(
+            new BookingBaseDto()
+            {
+                State = Domain.Dto.BookingProcess.BookingState.Cancelled,
+                BookingId = id
+            });
+
+        return result == null ? new NoContentResult() : new JsonResult(result);
+    }
+
+    /// <summary>
+    /// Создать новую запись о бронировании.
+    /// </summary>
+    /// <param name="id">Идентификатор бронирования.</param>
+    /// <returns>Результат операции.</returns>
+    [HttpPut, Route("api/[controller]/{id}/confirm")]
+    public async Task<IActionResult> PutAsync(string id)
+    {
+        var result = await bookingStateService.ProcessRequest(
+            new BookingBaseDto()
+            {
+                State = Domain.Dto.BookingProcess.BookingState.Confirmed,
+                BookingId = id
+            });
 
         return result == null ? new NoContentResult() : new JsonResult(result);
     }

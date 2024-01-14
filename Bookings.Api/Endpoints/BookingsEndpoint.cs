@@ -1,33 +1,14 @@
 using Bookings.Contracts;
 using Bookings.Domain;
-using Bookings.Repositories.Contexts;
-using Bookings.Repositories.Domain;
 using Bookings.Repositories.Domain.Interfaces;
-
 using Grpc.Core;
 
-using MassTransit;
+namespace Bookings.Api.Endpoints;
 
-namespace Bookings.Storage.Services;
-
-public class BookingsEndpoint : BookingsContract.BookingsContractBase
+public class BookingsEndpoint(
+    IBookingsRepository bookingsRepository)
+    : BookingsContract.BookingsContractBase
 {
-    private readonly ILogger<BookingsEndpoint> _logger;
-    private readonly IBookingsRepository bookingsRepository;
-    private readonly IBus _bus;
-
-    public BookingsEndpoint(
-        IMongoDBContext dBContext,
-        IBus bus,
-        ILogger<BookingsEndpoint> logger,
-        ILogger<BookingsRepository> bookingLogger)
-    {
-        bookingsRepository = new BookingsRepository(dBContext, bookingLogger);
-
-        _logger = logger;
-        _bus = bus;
-    }
-
     public override async Task<BookingsResponse?> GetBookings(BookingsRequest request, ServerCallContext context)
     {
         IEnumerable<Booking> bookings;
@@ -50,10 +31,12 @@ public class BookingsEndpoint : BookingsContract.BookingsContractBase
         response.Bookings.AddRange(bookings.Select(_ =>
             new BookingItem
             {
-                Id = _.Id,
+                Id = _.Id.ToString(),
                 BookName = _.BookName,
                 Category = _.Category,
-                HotelId = _.Hotel.Id,
+
+                // TODO: replace with room
+                // HotelId = _.Hotel.Id,
                 Price = _.Price
             }));
 

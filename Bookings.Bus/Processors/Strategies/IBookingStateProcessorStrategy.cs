@@ -18,5 +18,5 @@ public interface IBookingStateProcessorStrategy
     /// </summary>
     /// <param name="bookingModel">Модель с данными бронирования.</param>
     /// <returns></returns>
-    Task<Response<BookingProcessDto>?> Execute(BookingDto bookingModel);
+    Task<Response<BookingProcessDto>?> Execute(BookingBaseDto bookingModel);
 }

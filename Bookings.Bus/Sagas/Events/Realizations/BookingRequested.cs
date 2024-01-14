@@ -6,11 +6,9 @@ using System.Runtime.CompilerServices;
 
 namespace Bookings.Bus.Sagas.Events.Realizations;
 
-public record BookingRequested : IBookingRequested
+public record BookingRequested : BaseBookingRequest, IBookingRequested
 {
-    public Guid CorrelationId { get; set; }
-
-    public DateTime Timestamp { get; set; }
+    public Guid StateId { get; set; }
 
     public string BookName { get; set; }
 
@@ -18,7 +16,7 @@ public record BookingRequested : IBookingRequested
 
     public string Category { get; set; }
 
-    public string HotelId { get; set; }
+    public string RoomId { get; set; }
 
     [ModuleInitializer]
     internal static void Init()

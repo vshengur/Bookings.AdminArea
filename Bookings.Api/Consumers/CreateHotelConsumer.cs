@@ -1,18 +1,19 @@
 ﻿using Bookings.Bus.Queues.Messages;
 using Bookings.Domain;
-using Bookings.Repositories.Domain;
+using Bookings.Repositories.Domain.Interfaces;
+
 using MassTransit;
 
-namespace Bookings.Storage.Queues.Consumers;
+namespace Bookings.Api.Consumers;
 
 public class CreateHotelConsumer : IConsumer<CreateHotelMessage>
 {
     readonly ILogger<CreateHotelConsumer> _logger;
-    private readonly HotelsRepository _hotelsRepository;
+    private readonly IHotelsRepository _hotelsRepository;
 
     public CreateHotelConsumer(
         ILogger<CreateHotelConsumer> logger,
-        HotelsRepository hotelsRepository)
+        IHotelsRepository hotelsRepository)
     {
         _logger = logger;
         _hotelsRepository = hotelsRepository;
@@ -20,14 +21,15 @@ public class CreateHotelConsumer : IConsumer<CreateHotelMessage>
 
     public async Task Consume(ConsumeContext<CreateHotelMessage> context)
     {
-        _logger.LogInformation(message: "Creating {BookName}", context.Message.Name);
+        _logger.LogInformation(message: "Creating {HotelName}", context.Message.Name);
 
         var newItem = new Hotel()
         {
             Name = context.Message.Name,
             City = context.Message.City,
+            Country = context.Message.Country,
             Stars = context.Message.Stars,
-            RoomsCount = context.Message.RoomsCount,
+            Rate = context.Message.Rate,
             LocationX = context.Message.LocationX,
             LocationY = context.Message.LocationY,
         };

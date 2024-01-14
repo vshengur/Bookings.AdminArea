@@ -1,4 +1,4 @@
-﻿using Bookings.Contracts;
+﻿using Bookings.Domain.Dto;
 
 namespace Bookings.Infrastructure.Services.Abstractions;
 
@@ -13,7 +13,7 @@ public interface IBookingService
     /// <param name="page"></param>
     /// <param name="count"></param>
     /// <returns></returns>
-    Task<BookingsResponse> GetBookingsAsync(int page = 0, int count = 30);
+    Task<IList<BookingDto>> GetBookingsAsync(int page = 0, int count = 30);
 
     /// <summary>
     /// 
@@ -21,5 +21,5 @@ public interface IBookingService
     /// <param name="page"></param>
     /// <param name="count"></param>
     /// <returns></returns>
-    Task<BookingsResponse> GetBookingsAsync(string id);
+    Task<IList<BookingDto>> GetBookingsAsync(string id);
 }

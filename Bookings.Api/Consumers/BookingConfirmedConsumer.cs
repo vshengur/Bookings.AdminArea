@@ -1,7 +1,7 @@
 ﻿using Bookings.Bus.Sagas.Events.Abstractions;
 using MassTransit;
 
-namespace Bookings.Storage.Queues.Consumers;
+namespace Bookings.Api.Consumers;
 
 public class BookingConfirmedConsumer : IConsumer<IBookingConfirmed>
 {

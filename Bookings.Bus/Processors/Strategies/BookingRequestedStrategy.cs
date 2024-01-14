@@ -7,32 +7,23 @@ using MassTransit;
 
 namespace Bookings.Bus.Processors.Strategies;
 
-public class BookingRequestedStrategy : IBookingStateProcessorStrategy
+public class BookingRequestedStrategy(IBus bus,
+    IRequestClient<IBookingRequested> bookingRequestedEventClient) : IBookingStateProcessorStrategy
 {
-    private readonly IBus bus;
-    private readonly IRequestClient<IBookingRequested> bookingRequestedEventClient;
+    private readonly IBus bus = bus;
+    private readonly IRequestClient<IBookingRequested> bookingRequestedEventClient = bookingRequestedEventClient;
 
-    public BookingRequestedStrategy(
-        IBus bus,
-        IRequestClient<IBookingRequested> bookingRequestedEventClient)
+    public async Task<Response<BookingProcessDto>?> Execute(BookingBaseDto bookingModel)
     {
-        this.bus = bus;
-        this.bookingRequestedEventClient = bookingRequestedEventClient;
-    }
+        var bookingFullModel = bookingModel as BookingDto;
 
-    public async Task<Response<BookingProcessDto>?> Execute(BookingDto bookingModel)
-    {
         // Отправка запроса на бронирование
         var bookingRequestedMessage = new BookingRequested
         {
-            CorrelationId = Guid.NewGuid(),
-            Timestamp = DateTime.UtcNow,
-
-            // Дополнительные свойства для запроса бронирования
-            BookName = bookingModel.BookName,
-            Category = bookingModel.Category,
-            HotelId = bookingModel.HotelId,
-            Price = bookingModel.Price,
+            BookName = bookingFullModel.BookName,
+            Category = bookingFullModel.Category,
+            RoomId = bookingFullModel.RoomId,
+            Price = bookingFullModel.Price,            
         };
 
         if (!bookingModel.IsRequestResponsePattern)

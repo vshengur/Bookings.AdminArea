@@ -5,18 +5,8 @@ using System.Runtime.CompilerServices;
 
 namespace Bookings.Bus.Sagas.Events.Realizations;
 
-public record BookingConfirmed : IBookingConfirmed
+public record BookingConfirmed : BaseBookingRequest, IBookingConfirmed
 {
-    public Guid CorrelationId { get; set; }
-
-    public DateTime Timestamp { get; set; }
-
-    public string BookName { get; set; }
-
-    public double Price { get; set; }
-
-    public string Category { get; set; }
-
     public string HotelId { get; set; }
 
     public string BookingId { get; set; }
@@ -24,6 +14,6 @@ public record BookingConfirmed : IBookingConfirmed
     [ModuleInitializer]
     internal static void Init()
     {
-        GlobalTopology.Send.UseCorrelationId<BookingRequested>(x => x.CorrelationId);
+        GlobalTopology.Send.UseCorrelationId<BookingConfirmed>(x => x.CorrelationId);
     }
 }

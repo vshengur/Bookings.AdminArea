@@ -15,5 +15,5 @@ public interface IBookingStateService
     /// </summary>
     /// <param name="bookingDTO">Booking model.</param>
     /// <returns></returns>
-    Task<Response<BookingProcessDto>> ProcessRequest(BookingDto bookingDTO);
+    Task<Response<BookingProcessDto>> ProcessRequest(BookingBaseDto bookingDTO);
 }

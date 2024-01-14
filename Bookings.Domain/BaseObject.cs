@@ -1,20 +1,20 @@
-﻿using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
+﻿namespace Bookings.Domain;
 
-namespace Bookings.Domain;
-
-public class BaseObject
+public abstract class BaseObject : IBaseObject
 {
-    [BsonId]
-    [BsonRepresentation(BsonType.ObjectId)]
-    public string? Id { get; private set; }
+    public Guid Id { get; private set; }
+
+    public DateTime Created { get; private set; }
+
+    public DateTime? EditedAt { get; private set; }
 
     public BaseObject()
     {
+        Created = DateTime.UtcNow;
     }
 
-    public void GenerateId()
+    public void Updated()
     {
-        this.Id = ObjectId.GenerateNewId().ToString();
+        EditedAt = DateTime.UtcNow;
     }
 }

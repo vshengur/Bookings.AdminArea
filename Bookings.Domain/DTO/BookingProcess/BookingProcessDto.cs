@@ -4,5 +4,5 @@ public class BookingProcessDto
 {
     public required string BookingId { get; set; }
 
-    public Guid CorrelationId { get; set; }
+    public Guid StateId { get; set; }
 }

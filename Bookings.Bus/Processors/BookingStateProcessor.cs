@@ -46,7 +46,7 @@ public class BookingStateProcessor
     /// </summary>
     /// <param name="bookingDTO"></param>
     /// <returns></returns>
-    public async Task<Response<BookingProcessDto>?> Proceed(BookingDto bookingDTO)
+    public async Task<Response<BookingProcessDto>?> Proceed(BookingBaseDto bookingDTO)
     {
         return await _strategy.Execute(bookingDTO);
     }

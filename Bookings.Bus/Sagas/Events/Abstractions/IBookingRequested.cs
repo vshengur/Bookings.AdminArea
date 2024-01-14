@@ -2,9 +2,7 @@
 
 public interface IBookingRequested : IBookingBaseRequest
 {
-    // Guid BookingId { get; set; }
-
-    DateTime Timestamp { get; set; }
+    Guid StateId { get; set; }
 
     // Дополнительные свойства для запроса бронирования
     string BookName { get; set; }
@@ -13,10 +11,5 @@ public interface IBookingRequested : IBookingBaseRequest
 
     string Category { get; set; }
 
-    string HotelId { get; set; }
-}
-
-public interface IBookingBaseRequest
-{
-    public Guid CorrelationId { get; set; }
+    string RoomId { get; set; }
 }

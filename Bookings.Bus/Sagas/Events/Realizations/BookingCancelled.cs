@@ -5,17 +5,9 @@ using System.Runtime.CompilerServices;
 
 namespace Bookings.Bus.Sagas.Events.Realizations;
 
-public record BookingCancelled : IBookingCancelled
+public record BookingCancelled : BaseBookingRequest, IBookingCancelled
 {
-    public Guid CorrelationId { get; set; }
-
-    public DateTime Timestamp { get; set; }
-
-    public string BookName { get; set; }
-
-    public double Price { get; set; }
-
-    public string Category { get; set; }
+    public string CancelReason { get; set; }
 
     public string HotelId { get; set; }
 

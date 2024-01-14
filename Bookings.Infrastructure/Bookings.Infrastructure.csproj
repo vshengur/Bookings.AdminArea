@@ -13,15 +13,12 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+	  <PackageReference Include="MongoDB.Bson" Version="2.23.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Bookings.Bus\Bookings.Bus.csproj" />
     <ProjectReference Include="..\Bookings.Domain\Bookings.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Protobuf Include="..\Protos\bookings.proto" GrpcServices="Client" />
   </ItemGroup>
 
 </Project>

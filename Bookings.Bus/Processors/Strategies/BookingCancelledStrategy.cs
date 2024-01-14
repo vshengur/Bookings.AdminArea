@@ -20,20 +20,13 @@ public class BookingCancelledStrategy : IBookingStateProcessorStrategy
         this.bookingCancelledEventClient = bookingCancelledEventClient;
     }
 
-    public async Task<Response<BookingProcessDto>?> Execute(BookingDto bookingModel)
+    public async Task<Response<BookingProcessDto>?> Execute(BookingBaseDto bookingModel)
     {
         // Отправка запроса на бронирование
         var bookingCancelledMessage = new BookingCancelled
         {
-            CorrelationId = bookingModel.CorrelationId,
-            Timestamp = DateTime.UtcNow,
-
             // Дополнительные свойства для запроса бронирования
             BookingId = bookingModel.BookingId,
-            BookName = bookingModel.BookName,
-            Category = bookingModel.Category,
-            HotelId = bookingModel.HotelId,
-            Price = bookingModel.Price,
         };
 
         if (!bookingModel.IsRequestResponsePattern)

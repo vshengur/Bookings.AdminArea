@@ -1,14 +1,12 @@
-﻿using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-
-namespace Bookings.Domain;
+﻿namespace Bookings.Domain;
 
 public class Booking: BaseObject
 {
-    [BsonElement("Name")]
+    public Booking() : base() {}
+
     public string BookName { get; set; } = null!;
 
-    public Hotel Hotel { get; set; } = null!;
+    public Room Room { get; set; } = null!;
 
     public double Price { get; set; }
 
@@ -16,8 +14,11 @@ public class Booking: BaseObject
 
     public Guid StateId { get; set; }
 
-    public Booking()
-        :base()
-    {
-    }
+    public DateOnly StartDate { get; set; }
+
+    public DateOnly EndDate { get; set; }
+
+    public int Adults { get; set; }
+
+    public int Kids { get; set; }
 }

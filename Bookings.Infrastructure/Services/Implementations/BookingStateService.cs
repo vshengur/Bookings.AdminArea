@@ -38,13 +38,13 @@ public class BookingStateService : IBookingStateService
         this.bookingConfirmedEventClient = bookingConfirmedEventClient;
     }
 
-    public async Task<Response<BookingProcessDto>> ProcessRequest(BookingDto bookingDTO)
+    public async Task<Response<BookingProcessDto>> ProcessRequest(BookingBaseDto bookingDTO)
     {
         IBookingStateProcessorStrategy bookingStateProcessorStrategy = bookingDTO.State switch
         {
             BookingState.Confirmed => new BookingConfirmedStrategy(bus, bookingConfirmedEventClient),
             BookingState.Cancelled => new BookingCancelledStrategy(bus, bookingCancelledEventClient),
-            _ => new BookingRequestedStrategy(bus, bookingRequestedEventClient),
+            _ => new BookingRequestedStrategy(bus, bookingRequestedEventClient)
         };
 
         BookingStateProcessor bookingStateProcessor = new(bookingStateProcessorStrategy);

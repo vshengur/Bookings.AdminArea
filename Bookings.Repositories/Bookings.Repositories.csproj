@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Bookings.Domain\Bookings.Domain.csproj" />
+    <ProjectReference Include="..\Bookings.Infrastructure\Bookings.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

@@ -3,6 +3,7 @@
 using System.Threading.Tasks;
 
 using Bookings.Contracts;
+using Bookings.Domain.Dto;
 using Bookings.Infrastructure.Services.Abstractions;
 
 /// <summary>
@@ -16,7 +17,7 @@ public class BookingService(BookingsContract.BookingsContractClient grpcBookingC
 {
     private readonly BookingsContract.BookingsContractClient grpcBookingClient = grpcBookingClient;
 
-    public async Task<BookingsResponse> GetBookingsAsync(int page = 0, int count = 30)
+    public async Task<IList<BookingDto>> GetBookingsAsync(int page = 0, int count = 30)
     {
         var bookings = await grpcBookingClient.GetBookingsAsync(
             new BookingsRequest
@@ -26,10 +27,12 @@ public class BookingService(BookingsContract.BookingsContractClient grpcBookingC
             },
             deadline: DateTime.UtcNow.AddSeconds(10));
 
-        return bookings;
+        return bookings.Bookings
+            .Select(_ => new BookingDto() { })
+            .ToList();
     }
 
-    public async Task<BookingsResponse> GetBookingsAsync(string id)
+    public async Task<IList<BookingDto>> GetBookingsAsync(string id)
     {
         var bookings = await grpcBookingClient.GetBookingsAsync(
             new BookingsRequest
@@ -38,6 +41,8 @@ public class BookingService(BookingsContract.BookingsContractClient grpcBookingC
             },
             deadline: DateTime.UtcNow.AddSeconds(10));
 
-        return bookings;
+        return bookings.Bookings
+            .Select(_ => new BookingDto() { })
+            .ToList();
     }
 }

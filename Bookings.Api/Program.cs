@@ -3,29 +3,56 @@
 // </copyright>
 
 #pragma warning disable SA1200 // Using directives should be placed correctly;
+using Bookings.Api.Consumers;
+using Bookings.Api.Endpoints;
 using Bookings.Bus.Sagas.StateMachine;
 using Bookings.Bus.Sagas.States;
-using Bookings.Contracts;
+using Bookings.Domain;
+using Bookings.Infrastructure.Documents;
+using Bookings.Infrastructure.Mappers;
 using Bookings.Infrastructure.Services.Abstractions;
 using Bookings.Infrastructure.Services.Implementations;
+using Bookings.Repositories.Contexts;
+using Bookings.Repositories.Domain;
+using Bookings.Repositories.Domain.Interfaces;
+using Bookings.Repositories.Models.Settings;
+
 using Grpc.Core;
-using Grpc.Net.Client.Configuration;
+
 using MassTransit;
+
 using Microsoft.AspNetCore.Diagnostics;
+
 using static System.Net.Mime.MediaTypeNames;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddGrpc();
 builder.Services.AddControllers();
 
 builder.Configuration.AddEnvironmentVariables(prefix: "Api_");
 
+var user = builder.Configuration.GetRequiredSection("DB_USER").Value;
+var password = builder.Configuration.GetRequiredSection("DB_PASSWORD").Value;
+var host = builder.Configuration.GetRequiredSection("DB_HOST").Value;
+var port = builder.Configuration.GetRequiredSection("DB_PORT").Value;
+
+builder.Services.Configure<BookingsStoreDatabaseSettings>(options =>
+{
+    options.ConnectionString = $"mongodb://{user}:{password}@{host}:{port}/?authMechanism=SCRAM-SHA-256";
+
+    options.DatabaseName = builder.Configuration
+        .GetRequiredSection($"BookingDatabase:{nameof(BookingsStoreDatabaseSettings.DatabaseName)}")!.Value!;
+    options.BookingsCollectionName = builder.Configuration
+        .GetRequiredSection($"BookingDatabase:{nameof(BookingsStoreDatabaseSettings.BookingsCollectionName)}").Value!;
+    options.HotelsCollectionName = builder.Configuration
+        .GetRequiredSection($"BookingDatabase:{nameof(BookingsStoreDatabaseSettings.HotelsCollectionName)}").Value!;
+    options.ClientsCollectionName = builder.Configuration
+        .GetRequiredSection($"BookingDatabase:{nameof(BookingsStoreDatabaseSettings.ClientsCollectionName)}").Value!;
+});
+
 builder.Services.AddMassTransit(x =>
 {
-    var user = builder.Configuration.GetRequiredSection("DB_USER").Value;
-    var password = builder.Configuration.GetRequiredSection("DB_PASSWORD").Value;
-    var host = builder.Configuration.GetRequiredSection("DB_HOST").Value;
-    var port = builder.Configuration.GetRequiredSection("DB_PORT").Value;
-
     var databaseName = builder.Configuration.GetSection($"BookingDatabase:DatabaseName").Value;
     var bookingsStateCollectionName = builder.Configuration.GetSection($"BookingDatabase:BookingsStateCollectionName").Value;
 
@@ -33,6 +60,20 @@ builder.Services.AddMassTransit(x =>
     var mongoUrl = $"mongodb://{user}:{password}@{host}:{port}/?authMechanism=SCRAM-SHA-256";
 
     x.SetKebabCaseEndpointNameFormatter();
+
+    x.AddConsumer<CreateHotelConsumer>();
+    x.AddConsumer<CreateRoomConsumer>();
+
+    // Sagas consumers
+    x.AddConsumer<BookingRequestedConsumer>();
+    x.AddRequestClient<BookingRequestedConsumer>();
+
+    x.AddConsumer<BookingConfirmedConsumer>();
+    x.AddRequestClient<BookingConfirmedConsumer>();
+
+    x.AddConsumer<BookingCancelledConsumer>();
+    x.AddRequestClient<BookingCancelledConsumer>();
+
     x.UsingRabbitMq((context, cfg) =>
     {
         cfg.Host(builder.Configuration.GetRequiredSection($"RabbitMq_Host").Value, "/", h =>
@@ -53,35 +94,17 @@ builder.Services.AddMassTransit(x =>
         });
 });
 
-var grpcMethodConfig = new MethodConfig()
-{
-    Names = { MethodName.Default },
-    RetryPolicy = new RetryPolicy
-    {
-        MaxAttempts = 5,
-        InitialBackoff = TimeSpan.FromSeconds(3),
-        MaxBackoff = TimeSpan.FromSeconds(50),
-        BackoffMultiplier = 1.5,
-        RetryableStatusCodes = { StatusCode.Unavailable },
-    },
-};
+builder.Services.AddSingleton<IMongoDBContext, MongoBookingsDBContext>();
 
-builder.Services.AddGrpcClient<BookingsContract.BookingsContractClient>(o =>
-{
-    o.Address = new Uri(builder.Configuration.GetRequiredSection($"StorageEndpoint:Address").Value);
-})
-.ConfigureChannel(o =>
-{
-    o.Credentials = ChannelCredentials.SecureSsl;
-    o.ServiceConfig = new ServiceConfig
-    {
-        LoadBalancingConfigs = { new RoundRobinConfig() },
-        MethodConfigs = { grpcMethodConfig },
-    };
-});
+builder.Services.AddScoped<IDocumentMapper<Booking, BookingDocument>, BookingsMapper>();
+builder.Services.AddScoped<IDocumentMapper<Hotel, HotelDocument>, HotelsMapper>();
+builder.Services.AddScoped<IDocumentMapper<Room, RoomDocument>, RoomsMapper>();
+
+builder.Services.AddTransient<IBookingsRepository, BookingsRepository>();
+builder.Services.AddTransient<IHotelsRepository, HotelsRepository>();
+builder.Services.AddTransient<IRoomsRepository, RoomsRepository>();
 
 builder.Services.AddTransient<IBookingStateService, BookingStateService>();
-builder.Services.AddTransient<IBookingService, BookingService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -124,6 +147,8 @@ app.UseExceptionHandler(exceptionHandlerApp =>
     });
 });
 
+// Configure the HTTP request pipeline.
+app.MapGrpcService<BookingsEndpoint>();
 app.UseHttpsRedirection();
 
 app.MapControllers();

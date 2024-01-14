@@ -1,5 +1,6 @@
-﻿
-using Bookings.Domain;
+﻿using Bookings.Domain;
+using Bookings.Infrastructure.Documents;
+using Bookings.Infrastructure.Mappers;
 using Bookings.Repositories.Contexts;
 
 using Microsoft.Extensions.Logging;
@@ -9,59 +10,68 @@ using MongoDB.Driver;
 
 namespace Bookings.Repositories;
 
-public abstract class BaseRepository<TEntity>
-    : IBaseRepository<TEntity> where TEntity : BaseObject
+public abstract class BaseRepository<TDomain, TDocument> : IBaseRepository<TDomain> 
+    where TDomain : BaseObject
+    where TDocument : BaseDocument
 {
     protected readonly IMongoDBContext _mongoContext;
-    protected readonly ILogger<BaseRepository<TEntity>> _logger;
-    protected IMongoCollection<TEntity> _dbCollection;
+    protected readonly ILogger<BaseRepository<TDomain, TDocument>> _logger;
+    protected IMongoCollection<TDocument> _dbCollection;
+    protected readonly IDocumentMapper<TDomain, TDocument> _mapper;
 
     protected BaseRepository(
         IMongoDBContext context,
-        ILogger<BaseRepository<TEntity>> logger)
+        IDocumentMapper<TDomain, TDocument> mapper,
+        ILogger<BaseRepository<TDomain, TDocument>> logger)
     {
         _mongoContext = context;
         _logger = logger;
+        _mapper = mapper;
 
-        var mongoCollection = typeof(TEntity).Name + "s";
+        var mongoCollection = typeof(TDomain).Name + "s";
         _logger.LogTrace("Getting collection {mongoCollection}", mongoCollection);
 
-        _dbCollection = _mongoContext.GetCollection<TEntity>(mongoCollection);
+        _dbCollection = _mongoContext.GetCollection<TDocument>(mongoCollection);
     }
 
-    public async Task Create(TEntity obj)
+    public async Task Create(TDomain obj)
     {
         if (obj == null)
         {
-            throw new ArgumentNullException(typeof(TEntity).Name + " object is null");
+            throw new ArgumentNullException(typeof(TDocument).Name + " object is null");
         }
 
-        await _dbCollection.InsertOneAsync(obj);
+        await _dbCollection.InsertOneAsync(_mapper.ToDocument(obj));
     }
 
-    public void Delete(string id)
+    public void Delete(Guid id)
+    {
+        var objectId = new ObjectId(id.ToString());
+        _dbCollection.DeleteOneAsync(Builders<TDocument>.Filter.Eq("_id", objectId));
+
+    }
+
+    public Task<TDomain> Get(Guid id)
+    {
+        return Get(id.ToString());
+    }
+
+    public async Task<TDomain> Get(string id)
     {
         var objectId = new ObjectId(id);
-        _dbCollection.DeleteOneAsync(Builders<TEntity>.Filter.Eq("_id", objectId));
 
+        FilterDefinition<TDocument> filter = Builders<TDocument>.Filter.Eq("_id", objectId);
+
+        return _mapper.FromDocument(await(await _dbCollection.FindAsync(_ => _.Id == id)).FirstOrDefaultAsync());
     }
 
-    public async Task<TEntity> Get(string id)
-    {
-        var objectId = new ObjectId(id);
-
-        FilterDefinition<TEntity> filter = Builders<TEntity>.Filter.Eq("_id", objectId);
-
-        return await (await _dbCollection.FindAsync(_ => _.Id == id)).FirstOrDefaultAsync();
-    }
-
-    public Task<List<TEntity>> Get(int pageNumber, int pageSize)
+    public async Task<List<TDomain>> Get(int pageNumber, int pageSize)
     {
         // Определение фильтра (например, пустой фильтр для получения всех документов)
-        var filter = Builders<TEntity>.Filter.Empty;
+        var filter = Builders<TDocument>.Filter.Empty;
 
         // Определение сортировки по _id в порядке возрастания
-        var sort = Builders<TEntity>.Sort.Ascending("_id");
+        var sort = Builders<TDocument>.Sort.Ascending("_id");
 
         // Запрос с фильтром и лимитом для получения страницы
         var result = _dbCollection
@@ -70,12 +80,14 @@ public abstract class BaseRepository<TEntity>
             .Skip(pageNumber * pageSize)
             .Limit(pageSize);
 
-        return result.ToListAsync();
+        return  (await result.ToListAsync())
+            .Select(_ => _mapper.FromDocument(_))
+            .ToList();
     }
 
-    public void Update(TEntity obj)
+    public void Update(TDomain obj)
     {
         _dbCollection
-            .ReplaceOneAsync(Builders<TEntity>.Filter.Eq("_id", obj.Id), obj);
+            .ReplaceOneAsync(Builders<TDocument>.Filter.Eq("_id", obj.Id), _mapper.ToDocument(obj));
     }
 }

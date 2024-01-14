@@ -2,11 +2,10 @@
 
 using Riok.Mapperly.Abstractions;
 
-namespace Bookings.Domain.Mappers
+namespace Bookings.Domain.Mappers;
+
+[Mapper]
+public partial class BookingMapper
 {
-    [Mapper]
-    public partial class BookingMapper
-    {
-        public partial BookingDto BookingToBookingDto(Booking booking);
-    }
+    public partial BookingDto BookingToBookingDto(Booking booking);
 }
