@@ -6,6 +6,8 @@ namespace Bookings.Main.Controllers;
 
 using Bookings.Bus.Queues.Messages;
 using Bookings.Domain.Dto;
+using Bookings.Domain.Mappers;
+using Bookings.Repositories.Domain.Interfaces;
 
 using MassTransit;
 
@@ -22,8 +24,22 @@ using Microsoft.AspNetCore.Mvc;
 /// <param name="bus">Bus abstraction.</param>
 [ApiController]
 [Route("api/[controller]")]
-public class HotelsController(ILogger<HotelsController> logger, IBus bus) : ControllerBase
+public class HotelsController(ILogger<HotelsController> logger, IBus bus, IHotelsRepository repository)
+    : ControllerBase
 {
+    /// <summary>
+    /// Создать новую запись о бронировании.
+    /// </summary>
+    /// <param name="bookingModel">Модель нового бронирования.</param>
+    /// <returns>Результат оформления операции.</returns>
+    [HttpGet]
+    public async Task<List<HotelDto>> GetHotels()
+    {
+        var hotels = await repository.Get(0, 20);
+        var mapper = new DtoMapper();
+        return hotels.Select(_ => mapper.HotelToHotelDto(_)).ToList();
+    }
+
     /// <summary>
     /// Создать новую запись о бронировании.
     /// </summary>
@@ -116,7 +132,7 @@ public class HotelsController(ILogger<HotelsController> logger, IBus bus) : Cont
             await bus.Publish(hotelModel).ConfigureAwait(false);
         }
 
-        static Random GetRandom() => new((int)DateTime.Now.Ticks);
+        static Random GetRandom() => new ((int)DateTime.Now.Ticks);
     }
 
     /// <summary>

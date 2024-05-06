@@ -6,22 +6,14 @@ using MassTransit;
 
 namespace Bookings.Api.Consumers;
 
-public class CreateHotelConsumer : IConsumer<CreateHotelMessage>
+public class CreateHotelConsumer(
+    ILogger<CreateHotelConsumer> logger,
+    IHotelsRepository hotelsRepository)
+    : IConsumer<CreateHotelMessage>
 {
-    readonly ILogger<CreateHotelConsumer> _logger;
-    private readonly IHotelsRepository _hotelsRepository;
-
-    public CreateHotelConsumer(
-        ILogger<CreateHotelConsumer> logger,
-        IHotelsRepository hotelsRepository)
-    {
-        _logger = logger;
-        _hotelsRepository = hotelsRepository;
-    }
-
     public async Task Consume(ConsumeContext<CreateHotelMessage> context)
     {
-        _logger.LogInformation(message: "Creating {HotelName}", context.Message.Name);
+        logger.LogInformation(message: "Creating {HotelName}", context.Message.Name);
 
         var newItem = new Hotel()
         {
@@ -34,7 +26,7 @@ public class CreateHotelConsumer : IConsumer<CreateHotelMessage>
             LocationY = context.Message.LocationY,
         };
 
-        await _hotelsRepository.Create(newItem);
+        await hotelsRepository.Create(newItem);
         return;
     }
 }

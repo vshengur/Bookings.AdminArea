@@ -2,7 +2,7 @@
 
 public interface IBaseObject
 {
-    Guid Id { get; }
+    string Id { get; }
 
     DateTime Created { get; }
 

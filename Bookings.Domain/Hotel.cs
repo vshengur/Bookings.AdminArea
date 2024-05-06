@@ -4,6 +4,8 @@ public class Hotel : BaseObject
 {
     public Hotel() : base() { }
 
+    public Hotel(string id, DateTime created) : base(id, created) { }
+
     public string Name { get; set; }
 
     public string City { get; set; }
