@@ -6,22 +6,12 @@ using MassTransit;
 
 namespace Bookings.Api.Consumers;
 
-public class CreateRoomConsumer : IConsumer<CreateRoomMessage>
+public class CreateRoomConsumer(
+    ILogger<CreateHotelConsumer> logger,
+    IHotelsRepository hotelsRepository,
+    IRoomsRepository roomsRepository)
+    : IConsumer<CreateRoomMessage>
 {
-    readonly ILogger<CreateHotelConsumer> logger;
-    private readonly IHotelsRepository hotelsRepository;
-    private readonly IRoomsRepository roomsRepository;
-
-    public CreateRoomConsumer(
-        ILogger<CreateHotelConsumer> logger,
-        IHotelsRepository hotelsRepository,
-        IRoomsRepository roomsRepository)
-    {
-        this.logger = logger;
-        this.hotelsRepository = hotelsRepository;
-        this.roomsRepository = roomsRepository;
-    }
-
     public async Task Consume(ConsumeContext<CreateRoomMessage> context)
     {
         var hotel = await hotelsRepository.Get(context.Message.HotelId);

@@ -2,7 +2,7 @@
 
 public abstract class BaseObject : IBaseObject
 {
-    public Guid Id { get; private set; }
+    public string Id { get; private set; }
 
     public DateTime Created { get; private set; }
 
@@ -11,6 +11,12 @@ public abstract class BaseObject : IBaseObject
     public BaseObject()
     {
         Created = DateTime.UtcNow;
+    }
+
+    public BaseObject(string id, DateTime created)
+    {
+        Id = id;
+        Created = created;
     }
 
     public void Updated()

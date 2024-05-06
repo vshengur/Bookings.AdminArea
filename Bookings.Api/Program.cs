@@ -7,14 +7,7 @@ using Bookings.Api.Consumers;
 using Bookings.Api.Endpoints;
 using Bookings.Bus.Sagas.StateMachine;
 using Bookings.Bus.Sagas.States;
-using Bookings.Domain;
-using Bookings.Infrastructure.Documents;
-using Bookings.Infrastructure.Mappers;
-using Bookings.Infrastructure.Services.Abstractions;
-using Bookings.Infrastructure.Services.Implementations;
-using Bookings.Repositories.Contexts;
-using Bookings.Repositories.Domain;
-using Bookings.Repositories.Domain.Interfaces;
+using Bookings.Repositories;
 using Bookings.Repositories.Models.Settings;
 
 using Grpc.Core;
@@ -22,6 +15,8 @@ using Grpc.Core;
 using MassTransit;
 
 using Microsoft.AspNetCore.Diagnostics;
+
+using ServiceCollection.Extensions.Modules;
 
 using static System.Net.Mime.MediaTypeNames;
 
@@ -61,6 +56,7 @@ builder.Services.AddMassTransit(x =>
 
     x.SetKebabCaseEndpointNameFormatter();
 
+    // Basic consumers
     x.AddConsumer<CreateHotelConsumer>();
     x.AddConsumer<CreateRoomConsumer>();
 
@@ -94,17 +90,7 @@ builder.Services.AddMassTransit(x =>
         });
 });
 
-builder.Services.AddSingleton<IMongoDBContext, MongoBookingsDBContext>();
-
-builder.Services.AddScoped<IDocumentMapper<Booking, BookingDocument>, BookingsMapper>();
-builder.Services.AddScoped<IDocumentMapper<Hotel, HotelDocument>, HotelsMapper>();
-builder.Services.AddScoped<IDocumentMapper<Room, RoomDocument>, RoomsMapper>();
-
-builder.Services.AddTransient<IBookingsRepository, BookingsRepository>();
-builder.Services.AddTransient<IHotelsRepository, HotelsRepository>();
-builder.Services.AddTransient<IRoomsRepository, RoomsRepository>();
-
-builder.Services.AddTransient<IBookingStateService, BookingStateService>();
+builder.Services.RegisterModule<RepositoriesModule>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

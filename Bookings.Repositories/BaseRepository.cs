@@ -44,16 +44,11 @@ public abstract class BaseRepository<TDomain, TDocument> : IBaseRepository<TDoma
         await _dbCollection.InsertOneAsync(_mapper.ToDocument(obj));
     }
 
-    public void Delete(Guid id)
+    public void Delete(string id)
     {
-        var objectId = new ObjectId(id.ToString());
+        var objectId = new ObjectId(id);
         _dbCollection.DeleteOneAsync(Builders<TDocument>.Filter.Eq("_id", objectId));
 
-    }
-
-    public Task<TDomain> Get(Guid id)
-    {
-        return Get(id.ToString());
     }
 
     public async Task<TDomain> Get(string id)
