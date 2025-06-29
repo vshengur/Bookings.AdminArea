@@ -1,7 +1,7 @@
-using Bookings.Domain.Commands;
+using Bookings.Application.Commands;
 using FluentValidation;
 
-namespace Bookings.Domain.Validators;
+namespace Bookings.Application.Validators;
 
 /// <summary>
 /// Валидатор для команды создания отеля

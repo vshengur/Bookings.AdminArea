@@ -1,23 +1,22 @@
-using Bookings.Domain.Commands;
-using Bookings.Domain.Handlers;
-using Bookings.Domain.Handlers.Implementations;
-using Bookings.Domain.Validators;
+using Bookings.Application.Commands;
+using Bookings.Application.Handlers;
+using Bookings.Application.Validators;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Scrutor;
 
-namespace Bookings.Domain.Examples;
+namespace Bookings.Application.Examples;
 
 /// <summary>
-/// Примеры использования новой архитектуры с командами и валидацией
+/// Примеры использования Application слоя
 /// </summary>
-public static class CommandHandlerUsageExample
+public static class ApplicationUsageExample
 {
     /// <summary>
-    /// Пример настройки DI контейнера
+    /// Пример настройки DI контейнера для Application слоя
     /// </summary>
-    public static void ConfigureServices(IServiceCollection services)
+    public static void ConfigureApplicationServices(IServiceCollection services)
     {
         // Регистрация валидаторов
         services.AddScoped<IValidator<CreateHotelCommand>, CreateHotelCommandValidator>();
@@ -36,7 +35,7 @@ public static class CommandHandlerUsageExample
     }
 
     /// <summary>
-    /// Пример создания отеля с валидацией
+    /// Пример создания отеля через Application слой
     /// </summary>
     public static async Task<Hotel> CreateHotelExample(ICommandHandler<CreateHotelCommand, Hotel> handler)
     {
@@ -70,7 +69,7 @@ public static class CommandHandlerUsageExample
     }
 
     /// <summary>
-    /// Пример создания номера с валидацией
+    /// Пример создания номера через Application слой
     /// </summary>
     public static async Task<Room> CreateRoomExample(ICommandHandler<CreateRoomCommand, Room> handler, string hotelId)
     {
@@ -100,7 +99,7 @@ public static class CommandHandlerUsageExample
     }
 
     /// <summary>
-    /// Пример создания бронирования с валидацией
+    /// Пример создания бронирования через Application слой
     /// </summary>
     public static async Task<Booking> CreateBookingExample(ICommandHandler<CreateBookingCommand, Booking> handler, string roomId)
     {
@@ -135,7 +134,7 @@ public static class CommandHandlerUsageExample
     }
 
     /// <summary>
-    /// Пример обработки ошибок валидации
+    /// Пример обработки ошибок валидации в Application слое
     /// </summary>
     public static async Task HandleValidationErrorsExample(ICommandHandler<CreateHotelCommand, Hotel> handler)
     {
@@ -166,7 +165,7 @@ public static class CommandHandlerUsageExample
     }
 
     /// <summary>
-    /// Пример использования в контроллере
+    /// Пример использования в контроллере с Application слоем
     /// </summary>
     public static async Task<object> ControllerExample(ICommandHandler<CreateHotelCommand, Hotel> handler, CreateHotelCommand command)
     {

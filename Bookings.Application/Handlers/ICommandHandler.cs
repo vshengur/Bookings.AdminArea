@@ -1,4 +1,4 @@
-namespace Bookings.Domain.Handlers;
+namespace Bookings.Application.Handlers;
 
 /// <summary>
 /// Базовый интерфейс для обработчиков команд

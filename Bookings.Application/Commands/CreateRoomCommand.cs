@@ -1,4 +1,4 @@
-namespace Bookings.Domain.Commands;
+namespace Bookings.Application.Commands;
 
 /// <summary>
 /// Команда для создания номера

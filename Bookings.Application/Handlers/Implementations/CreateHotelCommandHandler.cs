@@ -1,7 +1,9 @@
-using Bookings.Domain.Commands;
+using Bookings.Application.Commands;
+using Bookings.Application.Handlers;
+using Bookings.Domain;
 using Microsoft.Extensions.Logging;
 
-namespace Bookings.Domain.Handlers.Implementations;
+namespace Bookings.Application.Handlers.Implementations;
 
 /// <summary>
 /// Реализация обработчика команды создания отеля

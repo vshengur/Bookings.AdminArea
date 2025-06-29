@@ -1,7 +1,7 @@
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 
-namespace Bookings.Domain.Handlers;
+namespace Bookings.Application.Handlers;
 
 /// <summary>
 /// Декоратор для валидации команд

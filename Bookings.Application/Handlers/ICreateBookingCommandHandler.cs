@@ -1,6 +1,7 @@
-using Bookings.Domain.Commands;
+using Bookings.Application.Commands;
+using Bookings.Domain;
 
-namespace Bookings.Domain.Handlers;
+namespace Bookings.Application.Handlers;
 
 /// <summary>
 /// Интерфейс для обработчика команды создания бронирования
