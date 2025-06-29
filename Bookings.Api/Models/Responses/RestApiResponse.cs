@@ -2,7 +2,7 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace Bookings.Web.Models.Responses;
+namespace Bookings.Api.Models.Responses;
 
 public class RestApiResponse<T>
     where T : class

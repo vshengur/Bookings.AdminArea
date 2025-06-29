@@ -1,5 +1,4 @@
-﻿using Bookings.Repositories.Contexts;
-using Bookings.Repositories.Domain.Interfaces;
+﻿using Bookings.Repositories.Domain.Interfaces;
 using Bookings.Repositories.Domain;
 
 using Microsoft.Extensions.DependencyInjection;
@@ -18,7 +17,6 @@ namespace Bookings.Repositories
         protected override void Load(IServiceCollection services)
         {
             base.Load(services);
-            services.AddSingleton<IMongoDBContext, MongoBookingsDBContext>();
 
             services.AddTransient<IBookingsRepository, BookingsRepository>();
             services.AddTransient<IHotelsRepository, HotelsRepository>();

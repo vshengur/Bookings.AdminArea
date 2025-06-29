@@ -16,7 +16,7 @@ public abstract class BaseRepository<TDomain, TDocument> : IBaseRepository<TDoma
 {
     protected readonly IMongoDBContext _mongoContext;
     protected readonly ILogger<BaseRepository<TDomain, TDocument>> _logger;
-    protected IMongoCollection<TDocument> _dbCollection;
+    protected readonly IMongoCollection<TDocument> _dbCollection;
     protected readonly IDocumentMapper<TDomain, TDocument> _mapper;
 
     protected BaseRepository(

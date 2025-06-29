@@ -11,101 +11,59 @@ namespace Bookings.Repositories.Contexts;
 /// <summary>
 /// 
 /// </summary>
-public class MongoBookingsDBContext : IMongoDBContext
-{
-    /// <summary>
-    /// Логгер
-    /// </summary>
-    private readonly ILogger _logger;
-
-    private IMongoDatabase _db { get; set; }
-
-    private MongoClient _mongoClient { get; set; }
-
-    public IClientSessionHandle Session { get; set; }
-
+public class MongoBookingsDBContext : MongoDbContext
+{ 
     /// <inheritdoc/>
     public readonly IMongoCollection<Hotel> HotelsCollection;
 
     /// <inheritdoc/>
-    public readonly IMongoCollection<Booking> BookingsCollection;
+    public readonly IMongoCollection<Room> RoomsCollection;
 
     /// <inheritdoc/>
-    public Collation CaseInsensitiveCollation { get; } = new Collation("ru", strength: CollationStrength.Primary);
+    public readonly IMongoCollection<Booking> BookingsCollection;
 
     public MongoBookingsDBContext(
-        ILogger<MongoBookingsDBContext> logger, 
+        ILogger<MongoBookingsDBContext> logger,
         IOptions<BookingsStoreDatabaseSettings> configuration)
+        :base (logger, configuration)
     {
-        _logger = logger;
+        _logger.LogInformation(@"Начало создания таблиц для контекста.");
 
-        var connectionString = configuration.Value.ConnectionString;
-        _logger.LogInformation("Инициализация соединения с БД \"{connectionString}\" началась.", connectionString);
-
-        _mongoClient = new MongoClient(configuration.Value.ConnectionString);
-        _db = _mongoClient.GetDatabase(configuration.Value.DatabaseName);
-
-
-        HotelsCollection = GetCollection<Hotel>(configuration.Value.HotelsCollectionName);
         BookingsCollection = GetCollection<Booking>(configuration.Value.BookingsCollectionName);
 
         //InitIndexes();
 
-        _logger.LogInformation("Инициализация соединения с БД \"{connectionString}\" завершилась успешно.", connectionString);
+        _logger.LogInformation(@"Окончание создания таблиц для контекста.");
     }
-
-    public IMongoCollection<T> GetCollection<T>(string name)
-    {
-        return _db.GetCollection<T>(name);
-    }
-
-
-    #region Private
-
-    /// <summary>
-    /// Создание индексов БД.
-    /// Если запросы обращений по списку будут работать на большой выборке,
-    /// возможно нужно будет создать индекс на все возможные сочетания параметров фильтрации.
-    /// </summary>
-    private void InitIndexes()
-    {
-        _logger.LogDebug("Start initialize Indexes");
-
-        /// Сначала инициализируем данные индексы,
-        /// т.к. по их запуску сбрасываются все остальные индексы
-        Task.WaitAll(
-            CreateRecourseCollectionIndex(HotelsCollection),
-            CreateRecourseCollectionIndex(BookingsCollection)
-        );
-
-        _logger.LogDebug("End initialize Indexes");
-    }
-
-    /// <summary>
-    /// Создаёт индекс для коллекции с обращениями
-    /// </summary>
-    /// <typeparam name="T">Модель обращения</typeparam>
-    /// <param name="collection">Коллекция</param>
-    /// <returns>Task</returns>
-    private async Task CreateRecourseCollectionIndex<T>(IMongoCollection<T> collection) where T : BaseObject
-    {
-        var indexBuilder = Builders<T>.IndexKeys;
-        IndexKeysDefinition<T>? keys = null;
-
-        keys = indexBuilder.Ascending(x => x.Id);
-
-        var indexModel = new CreateIndexModel<T>(
-            keys,
-            options: new CreateIndexOptions
-            {
-                Collation = CaseInsensitiveCollation,
-            }
-        );
-
-        collection.Indexes.DropAll();
-
-        await collection.Indexes.CreateOneAsync(indexModel);
-    }
-
-    #endregion
 }
+
+/// <summary>
+/// 
+/// </summary>
+public class MongoHotelsDBContext : MongoDbContext
+{
+    /// <inheritdoc/>
+    public readonly IMongoCollection<Hotel> HotelsCollection;
+
+    /// <inheritdoc/>
+    public readonly IMongoCollection<Room> RoomsCollection;
+
+    /// <inheritdoc/>
+    public readonly IMongoCollection<Booking> BookingsCollection;
+
+    public MongoHotelsDBContext(
+        ILogger<MongoBookingsDBContext> logger,
+        IOptions<BookingsStoreDatabaseSettings> configuration)
+        : base(logger, configuration)
+    {
+        _logger.LogInformation(@"Начало создания таблиц для контекста.");
+
+        HotelsCollection = GetCollection<Hotel>(configuration.Value.HotelsCollectionName);
+        RoomsCollection = GetCollection<Room>(configuration.Value.RoomsCollectionName);
+
+        //InitIndexes();
+
+        _logger.LogInformation(@"Окончание создания таблиц для контекста.");
+    }
+}
+

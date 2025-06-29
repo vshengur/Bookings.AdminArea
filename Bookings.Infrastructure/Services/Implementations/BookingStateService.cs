@@ -12,33 +12,20 @@ namespace Bookings.Infrastructure.Services.Implementations;
 /// <summary>
 /// Realization of <seealso cref="IBookingStateService"/>
 /// </summary>
-public class BookingStateService : IBookingStateService
+/// <remarks>
+/// Ctor.
+/// </remarks>
+/// <param name="bus">Bus abstraction.</param>
+/// <param name="bookingRequestedEventClient">Client for event <see cref="IBookingRequested"/>.</param>
+/// <param name="bookingCancelledEventClient">Client for event <see cref="IBookingCancelled"/>.</param>
+/// <param name="bookingConfirmedEventClient">Client for event <see cref="IBookingConfirmed"/>.</param>
+public class BookingStateService(
+    IBus bus,
+    IRequestClient<IBookingRequested> bookingRequestedEventClient,
+    IRequestClient<IBookingCancelled> bookingCancelledEventClient,
+    IRequestClient<IBookingConfirmed> bookingConfirmedEventClient) : IBookingStateService
 {
-    private readonly IBus bus;
-    private readonly IRequestClient<IBookingRequested> bookingRequestedEventClient;
-    private readonly IRequestClient<IBookingCancelled> bookingCancelledEventClient;
-    private readonly IRequestClient<IBookingConfirmed> bookingConfirmedEventClient;
-
-    /// <summary>
-    /// Ctor.
-    /// </summary>
-    /// <param name="bus">Bus abstraction.</param>
-    /// <param name="bookingRequestedEventClient">Client for event <see cref="IBookingRequested"/>.</param>
-    /// <param name="bookingCancelledEventClient">Client for event <see cref="IBookingCancelled"/>.</param>
-    /// <param name="bookingConfirmedEventClient">Client for event <see cref="IBookingConfirmed"/>.</param>
-    public BookingStateService(
-        IBus bus,
-        IRequestClient<IBookingRequested> bookingRequestedEventClient,
-        IRequestClient<IBookingCancelled> bookingCancelledEventClient,
-        IRequestClient<IBookingConfirmed> bookingConfirmedEventClient)
-    {
-        this.bus = bus;
-        this.bookingRequestedEventClient = bookingRequestedEventClient;
-        this.bookingCancelledEventClient = bookingCancelledEventClient;
-        this.bookingConfirmedEventClient = bookingConfirmedEventClient;
-    }
-
-    public async Task<Response<BookingProcessDto>> ProcessRequest(BookingBaseDto bookingDTO)
+    public Task<Response<BookingProcessDto>> ProcessRequest(BookingBaseDto bookingDTO)
     {
         IBookingStateProcessorStrategy bookingStateProcessorStrategy = bookingDTO.State switch
         {
@@ -48,6 +35,6 @@ public class BookingStateService : IBookingStateService
         };
 
         BookingStateProcessor bookingStateProcessor = new(bookingStateProcessorStrategy);
-        return await bookingStateProcessor.Proceed(bookingDTO);
+        return bookingStateProcessor.Proceed(bookingDTO);
     }
 }

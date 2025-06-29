@@ -1,6 +1,6 @@
 version: '3.8'
 
-services:      
+services:
   bookings-api:
     build:
       context: .
@@ -9,11 +9,18 @@ services:
     networks:
       - proxy
     ports:
-      - 8080:80
+      - 7200:8080
+      - 7300:8081
     depends_on:
       - bookings-db
       - bookings-rabbitMQ
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
     environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_HTTP_PORTS: 8080
+      ASPNETCORE_HTTPS_PORTS: 8081
       Api_DB_USER: "${BOOKINGS_DB_USER}"
       Api_DB_PASSWORD: "${BOOKINGS_DB_PASSWORD}"
       Api_DB_HOST: "${MAIN_SERVER_ADDRESS}"
@@ -21,6 +28,34 @@ services:
       Api_RabbitMq_Host: "${MAIN_SERVER_ADDRESS}"
       Api_RabbitMq_User: "${RABBITMQ_USER}"
       Api_RabbitMq_Password: "${RABBITMQ_PASSWORD}"
+      
+  bookings-hotels:
+    build:
+      context: .
+      dockerfile: Bookings.Hotels/Dockerfile
+    container_name: bookings-hotels
+    networks:
+      - proxy
+    ports:
+      - 7201:8080
+      - 7301:8081
+    depends_on:
+      - bookings-db
+      - bookings-rabbitMQ
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_HTTP_PORTS: 8080
+      ASPNETCORE_HTTPS_PORTS: 8081
+      Hotels_DB_USER: "${BOOKINGS_DB_USER}"
+      Hotels_DB_PASSWORD: "${BOOKINGS_DB_PASSWORD}"
+      Hotels_DB_HOST: "${MAIN_SERVER_ADDRESS}"
+      Hotels_DB_PORT: "${BOOKINGS_DB_PORT}"
+      Hotels_RabbitMq_Host: "${MAIN_SERVER_ADDRESS}"
+      Hotels_RabbitMq_User: "${RABBITMQ_USER}"
+      Hotels_RabbitMq_Password: "${RABBITMQ_PASSWORD}"
 
   bookings-db:
     restart: always
@@ -51,8 +86,8 @@ services:
     networks:
       - proxy
     ports:
-      - 15672:15672
-      - 5672:5672
+      - 15673:15672
+      - 5673:5672
     volumes:
       - ./data/rabbitmq:/var/lib/rabbitmq
 

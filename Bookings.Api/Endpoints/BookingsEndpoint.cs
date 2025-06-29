@@ -9,13 +9,14 @@ public class BookingsEndpoint(
     IBookingsRepository bookingsRepository)
     : BookingsContract.BookingsContractBase
 {
+    /// <inheritdoc/>
     public override async Task<BookingsResponse?> GetBookings(BookingsRequest request, ServerCallContext context)
     {
         IEnumerable<Booking> bookings;
 
         if (!string.IsNullOrWhiteSpace(request.Id))
         {
-            bookings = new[] { await bookingsRepository.Get(request.Id) };
+            bookings = [await bookingsRepository.Get(request.Id)];
         }
         else
         {

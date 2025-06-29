@@ -8,6 +8,7 @@ using Bookings.Api.Endpoints;
 using Bookings.Bus.Sagas.StateMachine;
 using Bookings.Bus.Sagas.States;
 using Bookings.Repositories;
+using Bookings.Repositories.Contexts;
 using Bookings.Repositories.Models.Settings;
 
 using Grpc.Core;
@@ -40,10 +41,6 @@ builder.Services.Configure<BookingsStoreDatabaseSettings>(options =>
         .GetRequiredSection($"BookingDatabase:{nameof(BookingsStoreDatabaseSettings.DatabaseName)}")!.Value!;
     options.BookingsCollectionName = builder.Configuration
         .GetRequiredSection($"BookingDatabase:{nameof(BookingsStoreDatabaseSettings.BookingsCollectionName)}").Value!;
-    options.HotelsCollectionName = builder.Configuration
-        .GetRequiredSection($"BookingDatabase:{nameof(BookingsStoreDatabaseSettings.HotelsCollectionName)}").Value!;
-    options.ClientsCollectionName = builder.Configuration
-        .GetRequiredSection($"BookingDatabase:{nameof(BookingsStoreDatabaseSettings.ClientsCollectionName)}").Value!;
 });
 
 builder.Services.AddMassTransit(x =>
@@ -57,8 +54,6 @@ builder.Services.AddMassTransit(x =>
     x.SetKebabCaseEndpointNameFormatter();
 
     // Basic consumers
-    x.AddConsumer<CreateHotelConsumer>();
-    x.AddConsumer<CreateRoomConsumer>();
 
     // Sagas consumers
     x.AddConsumer<BookingRequestedConsumer>();
@@ -91,6 +86,7 @@ builder.Services.AddMassTransit(x =>
 });
 
 builder.Services.RegisterModule<RepositoriesModule>();
+builder.Services.AddSingleton<IMongoDBContext, MongoBookingsDBContext>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

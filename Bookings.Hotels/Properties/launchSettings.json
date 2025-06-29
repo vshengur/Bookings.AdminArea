@@ -1,0 +1,66 @@
+{
+  "profiles": {
+    "http": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "Hotels_DB_USER": "root",
+        "Hotels_DB_PASSWORD": "fw324fe",
+        "Hotels_DB_HOST": "localhost",
+        "Hotels_DB_PORT": "27017",
+        "Hotels_RabbitMq_Host": "localhost",
+        "Hotels_RabbitMq_User": "guest",
+        "Hotels_RabbitMq_Password": "guest"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "http://localhost:5290"
+    },
+    "https": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "Hotels_DB_USER": "root",
+        "Hotels_DB_PASSWORD": "fw324fe",
+        "Hotels_DB_HOST": "localhost",
+        "Hotels_DB_PORT": "27017",
+        "Hotels_RabbitMq_Host": "localhost",
+        "Hotels_RabbitMq_User": "guest",
+        "Hotels_RabbitMq_Password": "guest"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "https://localhost:7032;http://localhost:5290"
+    },
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
+      "environmentVariables": {
+        "ASPNETCORE_HTTPS_PORTS": "8081",
+        "ASPNETCORE_HTTP_PORTS": "8080"
+      },
+      "publishAllPorts": true,
+      "useSSL": true
+    }
+  },
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:14351",
+      "sslPort": 44325
+    }
+  }
+}

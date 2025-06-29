@@ -4,10 +4,10 @@ using Bookings.Repositories.Domain.Interfaces;
 
 using MassTransit;
 
-namespace Bookings.Api.Consumers;
+namespace Bookings.Hotels.Consumers;
 
 public class CreateRoomConsumer(
-    ILogger<CreateHotelConsumer> logger,
+    ILogger<CreateRoomConsumer> logger,
     IHotelsRepository hotelsRepository,
     IRoomsRepository roomsRepository)
     : IConsumer<CreateRoomMessage>

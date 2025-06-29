@@ -4,7 +4,7 @@ using Bookings.Repositories.Domain.Interfaces;
 
 using MassTransit;
 
-namespace Bookings.Api.Consumers;
+namespace Bookings.Hotels.Consumers;
 
 public class CreateHotelConsumer(
     ILogger<CreateHotelConsumer> logger,

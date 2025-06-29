@@ -10,5 +10,7 @@ public class BookingsStoreDatabaseSettings
 
     public string HotelsCollectionName { get; set; } = null!;
 
+    public string RoomsCollectionName { get; set; } = null!;
+
     public string ClientsCollectionName { get; set; } = null!;
 }

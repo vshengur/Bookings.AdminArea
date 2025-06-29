@@ -2,7 +2,7 @@
 // Copyright (c) PlaceholderCompany. All rights reserved.
 // </copyright>
 
-namespace Bookings.Main.Controllers;
+namespace Bookings.Hotels.Controllers;
 
 using Bookings.Bus.Queues.Messages;
 using Bookings.Domain.Dto;
