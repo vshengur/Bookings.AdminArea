@@ -1,4 +1,5 @@
 ﻿using Bookings.Domain;
+using Bookings.Domain.Repositories;
 using Bookings.Infrastructure.Documents;
 using Bookings.Infrastructure.Mappers;
 using Bookings.Repositories.Contexts;

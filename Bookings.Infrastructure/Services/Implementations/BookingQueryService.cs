@@ -1,19 +1,17 @@
-﻿namespace Bookings.Infrastructure.Services.Implementations;
-
-using System.Threading.Tasks;
-
 using Bookings.Contracts;
 using Bookings.Domain.Dto;
-using Bookings.Infrastructure.Services.Abstractions;
+using Bookings.Domain.Services;
+
+namespace Bookings.Infrastructure.Services.Implementations;
 
 /// <summary>
-/// Implementation of. <seealso cref="IBookingService"/>
+/// Реализация сервиса для получения данных о бронированиях через gRPC
 /// </summary>
 /// <remarks>
-/// Initializes a new instance of the <see cref="BookingService"/> class.
+/// Инициализирует новый экземпляр класса <see cref="BookingQueryService"/>.
 /// </remarks>
-/// <param name="grpcBookingClient">gRPC booking client.</param>
-public class BookingService(BookingsContract.BookingsContractClient grpcBookingClient) : IBookingService
+/// <param name="grpcBookingClient">gRPC клиент для работы с бронированиями.</param>
+public class BookingQueryService(BookingsContract.BookingsContractClient grpcBookingClient) : IBookingQueryService
 {
     private readonly BookingsContract.BookingsContractClient grpcBookingClient = grpcBookingClient;
 
@@ -45,4 +43,4 @@ public class BookingService(BookingsContract.BookingsContractClient grpcBookingC
             .Select(_ => new BookingDto() { })
             .ToList();
     }
-}
+} 

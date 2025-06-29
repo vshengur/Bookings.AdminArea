@@ -3,14 +3,14 @@ using Bookings.Bus.Processors.Strategies;
 using Bookings.Bus.Sagas.Events.Abstractions;
 using Bookings.Domain.Dto;
 using Bookings.Domain.Dto.BookingProcess;
-using Bookings.Infrastructure.Services.Abstractions;
+using Bookings.Domain.Services;
 
 using MassTransit;
 
 namespace Bookings.Infrastructure.Services.Implementations;
 
 /// <summary>
-/// Realization of <seealso cref="IBookingStateService"/>
+/// Реализация <seealso cref="IBookingStateService"/>
 /// </summary>
 /// <remarks>
 /// Ctor.

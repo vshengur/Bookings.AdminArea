@@ -2,9 +2,11 @@ using Bookings.Application.Commands;
 using Bookings.Application.Handlers;
 using Bookings.Application.Handlers.Implementations;
 using Bookings.Application.Validators;
+using Bookings.Domain;
+
 using FluentValidation;
+
 using Microsoft.Extensions.DependencyInjection;
-using Scrutor;
 
 namespace Bookings.Application;
 

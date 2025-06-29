@@ -1,10 +1,10 @@
-﻿using Bookings.Repositories.Domain.Interfaces;
+﻿using Bookings.Domain.Repositories;
 using Bookings.Repositories.Domain;
 
 using Microsoft.Extensions.DependencyInjection;
 
 using ServiceCollection.Extensions.Modules;
-using Bookings.Infrastructure.Services.Abstractions;
+using Bookings.Domain.Services;
 using Bookings.Infrastructure.Services.Implementations;
 using Bookings.Domain;
 using Bookings.Infrastructure.Documents;
@@ -22,7 +22,10 @@ namespace Bookings.Repositories
             services.AddTransient<IHotelsRepository, HotelsRepository>();
             services.AddTransient<IRoomsRepository, RoomsRepository>();
 
+            services.AddTransient<BookingRepositoryAdapter>();
             services.AddTransient<IBookingStateService, BookingStateService>();
+            services.AddTransient<IBookingService, BookingService>();
+            services.AddTransient<IBookingQueryService, BookingQueryService>();
 
             services.AddScoped<IDocumentMapper<Booking, BookingDocument>, BookingsMapper>();
             services.AddScoped<IDocumentMapper<Hotel, HotelDocument>, HotelsMapper>();

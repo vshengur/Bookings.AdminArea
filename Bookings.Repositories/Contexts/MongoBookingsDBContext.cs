@@ -12,13 +12,7 @@ namespace Bookings.Repositories.Contexts;
 /// 
 /// </summary>
 public class MongoBookingsDBContext : MongoDbContext
-{ 
-    /// <inheritdoc/>
-    public readonly IMongoCollection<Hotel> HotelsCollection;
-
-    /// <inheritdoc/>
-    public readonly IMongoCollection<Room> RoomsCollection;
-
+{
     /// <inheritdoc/>
     public readonly IMongoCollection<Booking> BookingsCollection;
 
@@ -47,9 +41,6 @@ public class MongoHotelsDBContext : MongoDbContext
 
     /// <inheritdoc/>
     public readonly IMongoCollection<Room> RoomsCollection;
-
-    /// <inheritdoc/>
-    public readonly IMongoCollection<Booking> BookingsCollection;
 
     public MongoHotelsDBContext(
         ILogger<MongoBookingsDBContext> logger,

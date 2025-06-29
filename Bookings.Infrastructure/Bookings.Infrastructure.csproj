@@ -21,4 +21,8 @@
     <ProjectReference Include="..\Bookings.Domain\Bookings.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Protobuf Include="..\Protos\bookings.proto" GrpcServices="Client" />
+  </ItemGroup>
+
 </Project>

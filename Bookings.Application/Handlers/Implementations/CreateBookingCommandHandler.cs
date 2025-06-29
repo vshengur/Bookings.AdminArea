@@ -1,6 +1,6 @@
 using Bookings.Application.Commands;
-using Bookings.Application.Handlers;
 using Bookings.Domain;
+
 using Microsoft.Extensions.Logging;
 
 namespace Bookings.Application.Handlers.Implementations;

@@ -1,7 +1,7 @@
 ﻿using Bookings.Bus.Sagas.Events.Abstractions;
 using Bookings.Domain;
 using Bookings.Domain.Dto.BookingProcess;
-using Bookings.Repositories.Domain.Interfaces;
+using Bookings.Domain.Repositories;
 
 using MassTransit;
 

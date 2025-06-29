@@ -7,7 +7,7 @@ namespace Bookings.Hotels.Controllers;
 using Bookings.Bus.Queues.Messages;
 using Bookings.Domain.Dto;
 using Bookings.Domain.Mappers;
-using Bookings.Repositories.Domain.Interfaces;
+using Bookings.Domain.Repositories;
 
 using MassTransit;
 

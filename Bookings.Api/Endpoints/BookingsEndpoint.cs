@@ -1,6 +1,7 @@
 using Bookings.Contracts;
 using Bookings.Domain;
-using Bookings.Repositories.Domain.Interfaces;
+using Bookings.Domain.Repositories;
+
 using Grpc.Core;
 
 namespace Bookings.Api.Endpoints;

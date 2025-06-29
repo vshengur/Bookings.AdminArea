@@ -1,5 +1,5 @@
 using Bookings.Contracts;
-using Bookings.Infrastructure.Services.Abstractions;
+using Bookings.Domain.Services;
 using Bookings.Infrastructure.Services.Implementations;
 
 using Grpc.Core;
