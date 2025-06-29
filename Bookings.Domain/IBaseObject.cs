@@ -7,4 +7,6 @@ public interface IBaseObject
     DateTime Created { get; }
 
     DateTime? EditedAt { get; }
+
+    void MarkAsUpdated();
 }

@@ -1,26 +1,41 @@
 ﻿namespace Bookings.Domain;
 
-public abstract class BaseObject : IBaseObject
+/// <summary>
+/// Базовый доменный объект, следующий принципам DDD и чистой архитектуры
+/// </summary>
+public abstract record BaseObject : IBaseObject
 {
-    public string Id { get; private set; }
-
-    public DateTime Created { get; private set; }
-
+    public string Id { get; init; }
+    public DateTime Created { get; init; }
     public DateTime? EditedAt { get; private set; }
 
-    public BaseObject()
+    protected BaseObject()
     {
+        Id = Guid.NewGuid().ToString();
         Created = DateTime.UtcNow;
     }
 
-    public BaseObject(string id, DateTime created)
+    protected BaseObject(string id, DateTime created)
     {
         Id = id;
         Created = created;
     }
 
-    public void Updated()
+    /// <summary>
+    /// Отмечает объект как обновленный
+    /// </summary>
+    public void MarkAsUpdated()
     {
         EditedAt = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// Создает копию объекта с обновленным временем редактирования
+    /// </summary>
+    protected BaseObject WithUpdated()
+    {
+        var copy = this with { };
+        copy.EditedAt = DateTime.UtcNow;
+        return copy;
     }
 }
