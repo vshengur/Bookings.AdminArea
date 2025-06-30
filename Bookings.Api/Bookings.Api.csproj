@@ -25,6 +25,7 @@
 	<ItemGroup>
 	  <ProjectReference Include="..\Bookings.Infrastructure\Bookings.Infrastructure.csproj" />
 	  <ProjectReference Include="..\Bookings.Repositories\Bookings.Repositories.csproj" />
+	  <ProjectReference Include="..\Bookings.PostgresRepositories\Bookings.PostgresRepositories.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -48,7 +48,7 @@ builder.Services.AddMassTransit(x =>
     var databaseName = builder.Configuration.GetSection($"BookingDatabase:DatabaseName").Value;
     var bookingsStateCollectionName = builder.Configuration.GetSection($"BookingDatabase:BookingsStateCollectionName").Value;
 
-    // Настройка MongoDb
+    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ MongoDb
     var mongoUrl = $"mongodb://{user}:{password}@{host}:{port}/?authMechanism=SCRAM-SHA-256";
 
     x.SetKebabCaseEndpointNameFormatter();

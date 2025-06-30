@@ -29,17 +29,25 @@ public class BookingsEndpoint(
             return null;
         }
 
-        BookingsResponse response = new();
+        BookingsResponse response = new ();
         response.Bookings.AddRange(bookings.Select(_ =>
             new BookingItem
             {
                 Id = _.Id.ToString(),
-                BookName = _.BookName,
+                HotelId = _.HotelId,
+                GuestName = _.GuestName,
                 Category = _.Category,
-
-                // TODO: replace with room
-                // HotelId = _.Hotel.Id,
-                Price = _.Price
+                Price = _.Price,
+                RoomId = _.RoomId,
+                GuestEmail = _.GuestEmail,
+                CheckInDate = _.CheckInDate.ToString("O"),
+                CheckOutDate = _.CheckOutDate.ToString("O"),
+                CreatedAt = _.CreatedAt.ToString("O"),
+                UpdatedAt = _.UpdatedAt.ToString("O"),
+                Status = _.Status,
+                Adults = _.Adults,
+                Kids = _.Kids,
+                StateId = _.StateId.ToString()
             }));
 
         return response;

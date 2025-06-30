@@ -5,7 +5,7 @@ namespace Bookings.Application.Commands;
 /// </summary>
 public record CreateBookingCommand
 {
-    public string BookName { get; init; } = string.Empty;
+    public string GuestName { get; init; } = string.Empty;
     public string RoomId { get; init; } = string.Empty;
     public double Price { get; init; }
     public string Category { get; init; } = string.Empty;

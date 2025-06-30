@@ -7,6 +7,7 @@ namespace Bookings.Api.Controllers;
 using Bookings.Bus.Queues.Messages;
 using Bookings.Domain.Dto;
 using Bookings.Domain.Services;
+using Bookings.Domain;
 
 using MassTransit;
 
@@ -185,7 +186,7 @@ public class BookingsController : ControllerBase
         var result = await bookingStateService.ProcessRequest(
             new BookingBaseDto()
             {
-                State = Domain.Dto.BookingProcess.BookingState.Cancelled,
+                Status = nameof(BookingStatus.Cancelled),
                 BookingId = id
             });
 
@@ -203,7 +204,7 @@ public class BookingsController : ControllerBase
         var result = await bookingStateService.ProcessRequest(
             new BookingBaseDto()
             {
-                State = Domain.Dto.BookingProcess.BookingState.Confirmed,
+                Status = nameof(BookingStatus.Confirmed),
                 BookingId = id
             });
 
@@ -222,9 +223,20 @@ public class BookingsController : ControllerBase
         var newItem = new UpdateBookingMessage()
         {
             BookingId = id,
-            BookName = bookingModel.BookName,
-            Category = bookingModel.Category,
+            HotelId = bookingModel.HotelId,
+            RoomId = bookingModel.RoomId,
+            GuestName = bookingModel.GuestName,
+            GuestEmail = bookingModel.GuestEmail,
+            CheckInDate = bookingModel.CheckInDate,
+            CheckOutDate = bookingModel.CheckOutDate,
             Price = bookingModel.Price,
+            Status = bookingModel.Status,
+            Adults = bookingModel.Adults,
+            Kids = bookingModel.Kids,
+            Category = bookingModel.Category,
+            StateId = bookingModel.StateId,
+            CreatedAt = bookingModel.CreatedAt,
+            UpdatedAt = bookingModel.UpdatedAt
         };
 
         await bus.Send(newItem).ConfigureAwait(false);

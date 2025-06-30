@@ -20,7 +20,17 @@ message BookingsResponse {
 message BookingItem {
   string id = 1;
   string hotelId = 2;
-  string bookName = 3;
+  string guestName = 3;
   double price = 4;
   string category = 5;
+  string roomId = 6;
+  string guestEmail = 7;
+  string checkInDate = 8;
+  string checkOutDate = 9;
+  string createdAt = 10;
+  string updatedAt = 11;
+  string status = 12;
+  int32 adults = 13;
+  int32 kids = 14;
+  string stateId = 15;
 }

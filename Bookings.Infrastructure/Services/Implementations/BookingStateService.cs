@@ -1,6 +1,7 @@
 ﻿using Bookings.Bus.Processors;
 using Bookings.Bus.Processors.Strategies;
 using Bookings.Bus.Sagas.Events.Abstractions;
+using Bookings.Domain;
 using Bookings.Domain.Dto;
 using Bookings.Domain.Dto.BookingProcess;
 using Bookings.Domain.Services;
@@ -27,10 +28,11 @@ public class BookingStateService(
 {
     public Task<Response<BookingProcessDto>> ProcessRequest(BookingBaseDto bookingDTO)
     {
-        IBookingStateProcessorStrategy bookingStateProcessorStrategy = bookingDTO.State switch
+        var status = Enum.TryParse<BookingStatus>(bookingDTO.Status, out var parsedStatus) ? parsedStatus : BookingStatus.None;
+        IBookingStateProcessorStrategy bookingStateProcessorStrategy = status switch
         {
-            BookingState.Confirmed => new BookingConfirmedStrategy(bus, bookingConfirmedEventClient),
-            BookingState.Cancelled => new BookingCancelledStrategy(bus, bookingCancelledEventClient),
+            BookingStatus.Confirmed => new BookingConfirmedStrategy(bus, bookingConfirmedEventClient),
+            BookingStatus.Cancelled => new BookingCancelledStrategy(bus, bookingCancelledEventClient),
             _ => new BookingRequestedStrategy(bus, bookingRequestedEventClient)
         };
 

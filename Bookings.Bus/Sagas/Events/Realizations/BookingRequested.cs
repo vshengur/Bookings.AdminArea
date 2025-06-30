@@ -10,7 +10,7 @@ public record BookingRequested : BaseBookingRequest, IBookingRequested
 {
     public Guid StateId { get; set; }
 
-    public string BookName { get; set; }
+    public string GuestName { get; set; }
 
     public double Price { get; set; }
 

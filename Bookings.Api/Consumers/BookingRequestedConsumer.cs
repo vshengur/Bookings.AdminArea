@@ -15,6 +15,7 @@ public class BookingRequestedConsumer(
 {
     public async Task Consume(ConsumeContext<IBookingRequested> context)
     {
+        /*
         logger.LogInformation(message: "Creating {BookName}", context.Message.BookName);
 
         var room = await roomsRepository.Get(context.Message.RoomId);
@@ -35,5 +36,7 @@ public class BookingRequestedConsumer(
             BookingId = newItem.Id.ToString() !,
             StateId = context.Message.StateId
         });
+        */
+        await Task.CompletedTask;
     }
 }

@@ -20,7 +20,7 @@ public class BookingRequestedStrategy(IBus bus,
         // Отправка запроса на бронирование
         var bookingRequestedMessage = new BookingRequested
         {
-            BookName = bookingFullModel.BookName,
+            GuestName = bookingFullModel.GuestName,
             Category = bookingFullModel.Category,
             RoomId = bookingFullModel.RoomId,
             Price = bookingFullModel.Price,            

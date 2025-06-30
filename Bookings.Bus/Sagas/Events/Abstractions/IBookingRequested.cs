@@ -5,7 +5,7 @@ public interface IBookingRequested : IBookingBaseRequest
     Guid StateId { get; set; }
 
     // Дополнительные свойства для запроса бронирования
-    string BookName { get; set; }
+    string GuestName { get; set; }
 
     double Price { get; set; }
 

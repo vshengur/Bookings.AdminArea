@@ -16,20 +16,20 @@ public interface IBaseRepository<TEntity> where TEntity : BaseObject
     /// Обновить сущность
     /// </summary>
     /// <param name="obj">Сущность для обновления</param>
-    void Update(TEntity obj);
+    Task Update(TEntity obj);
 
     /// <summary>
     /// Удалить сущность по идентификатору
     /// </summary>
     /// <param name="id">Идентификатор сущности</param>
-    void Delete(string id);
+    Task Delete(string id);
 
     /// <summary>
     /// Получить сущность по идентификатору
     /// </summary>
     /// <param name="id">Идентификатор сущности</param>
     /// <returns>Сущность</returns>
-    Task<TEntity> Get(string id);
+    Task<TEntity?> Get(string id);
 
     /// <summary>
     /// Получить список сущностей с пагинацией

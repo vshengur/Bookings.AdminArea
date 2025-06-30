@@ -5,80 +5,41 @@
 /// </summary>
 public record Booking : BaseObject
 {
-    public string BookName { get; init; } = string.Empty;
-    public Room Room { get; init; } = null!;
-    public double Price { get; init; }
-    public string Category { get; init; } = string.Empty;
-    public Guid StateId { get; init; }
-    public DateOnly StartDate { get; init; }
-    public DateOnly EndDate { get; init; }
-    public int Adults { get; init; }
-    public int Kids { get; init; }
+    public string HotelId { get; set; }
+    public string RoomId { get; set; }
+    public string GuestName { get; set; } = string.Empty;
+    public string GuestEmail { get; set; } = string.Empty;
+    public DateOnly CheckInDate { get; set; }
+    public DateOnly CheckOutDate { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    public double Price { get; set; }
+    public string Status { get; set; } = string.Empty;
+    public int Adults { get; set; }
+    public int Kids { get; set; }
+    public string Category { get; set; } = string.Empty;
+    public Guid StateId { get; set; }
+    // Дополнительные поля по необходимости
+}
 
-    public Booking() : base() { }
+public class BookingBuilder
+{
+    private readonly Booking _booking = new();
 
-    public Booking(
-        string bookName, 
-        Room room, 
-        double price, 
-        string category, 
-        Guid stateId, 
-        DateOnly startDate, 
-        DateOnly endDate, 
-        int adults, 
-        int kids) : base()
-    {
-        BookName = bookName;
-        Room = room;
-        Price = price;
-        Category = category;
-        StateId = stateId;
-        StartDate = startDate;
-        EndDate = endDate;
-        Adults = adults;
-        Kids = kids;
-    }
+    public BookingBuilder SetHotelId(string hotelId) { _booking.HotelId = hotelId; return this; }
+    public BookingBuilder SetRoomId(string roomId) { _booking.RoomId = roomId; return this; }
+    public BookingBuilder SetGuestName(string guestName) { _booking.GuestName = guestName; return this; }
+    public BookingBuilder SetGuestEmail(string guestEmail) { _booking.GuestEmail = guestEmail; return this; }
+    public BookingBuilder SetCheckInDate(DateOnly checkInDate) { _booking.CheckInDate = checkInDate; return this; }
+    public BookingBuilder SetCheckOutDate(DateOnly checkOutDate) { _booking.CheckOutDate = checkOutDate; return this; }
+    public BookingBuilder SetCreatedAt(DateTime createdAt) { _booking.CreatedAt = createdAt; return this; }
+    public BookingBuilder SetUpdatedAt(DateTime updatedAt) { _booking.UpdatedAt = updatedAt; return this; }
+    public BookingBuilder SetPrice(double price) { _booking.Price = price; return this; }
+    public BookingBuilder SetStatus(string status) { _booking.Status = status; return this; }
+    public BookingBuilder SetAdults(int adults) { _booking.Adults = adults; return this; }
+    public BookingBuilder SetKids(int kids) { _booking.Kids = kids; return this; }
+    public BookingBuilder SetCategory(string category) { _booking.Category = category; return this; }
+    public BookingBuilder SetStateId(Guid stateId) { _booking.StateId = stateId; return this; }
 
-    /// <summary>
-    /// Создает новое бронирование с обновленными данными
-    /// </summary>
-    public Booking WithUpdatedData(
-        string? bookName = null,
-        Room? room = null,
-        double? price = null,
-        string? category = null,
-        Guid? stateId = null,
-        DateOnly? startDate = null,
-        DateOnly? endDate = null,
-        int? adults = null,
-        int? kids = null)
-    {
-        return this with
-        {
-            BookName = bookName ?? BookName,
-            Room = room ?? Room,
-            Price = price ?? Price,
-            Category = category ?? Category,
-            StateId = stateId ?? StateId,
-            StartDate = startDate ?? StartDate,
-            EndDate = endDate ?? EndDate,
-            Adults = adults ?? Adults,
-            Kids = kids ?? Kids
-        };
-    }
-
-    /// <summary>
-    /// Проверяет, активна ли бронь
-    /// </summary>
-    public bool IsActive => StartDate <= DateOnly.FromDateTime(DateTime.Today) && EndDate >= DateOnly.FromDateTime(DateTime.Today);
-
-    /// <summary>
-    /// Возвращает общую стоимость бронирования
-    /// </summary>
-    public double GetTotalPrice() => Price * GetTotalDays();
-
-    /// <summary>
-    /// Возвращает количество дней бронирования
-    /// </summary>
-    public int GetTotalDays() => EndDate.DayNumber - StartDate.DayNumber;
+    public Booking Build() => _booking;
 }

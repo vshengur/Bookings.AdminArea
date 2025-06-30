@@ -54,17 +54,17 @@ public class BookingRepositoryAdapter(
     /// Обновить бронирование
     /// </summary>
     /// <param name="booking">Бронирование для обновления</param>
-    public void UpdateAsync(Booking booking)
+    public async Task UpdateAsync(Booking booking)
     {
-        bookingsRepository.Update(booking);
+        await bookingsRepository.Update(booking);
     }
 
     /// <summary>
     /// Удалить бронирование по идентификатору
     /// </summary>
     /// <param name="id">Идентификатор бронирования</param>
-    public void DeleteAsync(string id)
+    public async Task DeleteAsync(string id)
     {
-        bookingsRepository.Delete(id);
+        await bookingsRepository.Delete(id);
     }
 } 

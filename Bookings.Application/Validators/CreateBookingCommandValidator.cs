@@ -10,11 +10,11 @@ public class CreateBookingCommandValidator : AbstractValidator<CreateBookingComm
 {
     public CreateBookingCommandValidator()
     {
-        RuleFor(x => x.BookName)
+        RuleFor(x => x.GuestName)
             .NotEmpty()
-            .WithMessage("Имя бронирования не может быть пустым")
+            .WithMessage("Имя гостя не может быть пустым")
             .MaximumLength(200)
-            .WithMessage("Имя бронирования не может превышать 200 символов");
+            .WithMessage("Имя гостя не может превышать 200 символов");
 
         RuleFor(x => x.RoomId)
             .NotEmpty()

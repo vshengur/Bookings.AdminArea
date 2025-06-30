@@ -1,9 +1,9 @@
 using Bookings.Domain;
 using Bookings.Domain.Dto;
-using Bookings.Domain.Dto.BookingProcess;
 using Bookings.Domain.Services;
 using Bookings.Infrastructure.Documents;
 using Bookings.Infrastructure.Mappers;
+using Bookings.Domain.Mappers;
 
 namespace Bookings.Infrastructure.Services.Implementations;
 
@@ -24,57 +24,63 @@ public class BookingService(
 
     public async Task<BookingDto> CreateBookingAsync(BookingDto bookingDto)
     {
-        // Создаем доменный объект из DTO
-        var booking = new Booking(
-            bookName: bookingDto.BookName ?? string.Empty,
-            room: null!, // TODO: Получить Room из репозитория по bookingDto.RoomId
-            price: bookingDto.Price,
-            category: bookingDto.Category ?? string.Empty,
-            stateId: Guid.NewGuid(), // TODO: Использовать правильный StateId
-            startDate: DateOnly.FromDateTime(DateTime.Today), // TODO: Добавить в DTO
-            endDate: DateOnly.FromDateTime(DateTime.Today.AddDays(1)), // TODO: Добавить в DTO
-            adults: 1, // TODO: Добавить в DTO
-            kids: 0 // TODO: Добавить в DTO
-        );
+        var booking = new Booking
+        {
+            Id = string.IsNullOrEmpty(bookingDto.BookingId) ? Guid.NewGuid().ToString() : bookingDto.BookingId,
+            HotelId = bookingDto.HotelId,
+            RoomId = bookingDto.RoomId,
+            GuestName = bookingDto.GuestName,
+            GuestEmail = bookingDto.GuestEmail,
+            CheckInDate = DateOnly.FromDateTime(bookingDto.CheckInDate),
+            CheckOutDate = DateOnly.FromDateTime(bookingDto.CheckOutDate),
+            CreatedAt = bookingDto.CreatedAt == default ? DateTime.UtcNow : bookingDto.CreatedAt,
+            UpdatedAt = bookingDto.UpdatedAt == default ? DateTime.UtcNow : bookingDto.UpdatedAt,
+            Price = bookingDto.Price,
+            Status = bookingDto.Status,
+            Adults = bookingDto.Adults,
+            Kids = bookingDto.Kids,
+            Category = bookingDto.Category,
+            StateId = Guid.TryParse(bookingDto.StateId, out var stateId) ? stateId : Guid.NewGuid()
+        };
 
         await bookingRepositoryAdapter.CreateAsync(booking);
-
-        // Возвращаем созданное бронирование
-        return MapToDto(booking);
+        return DtoMapper.BookingToBookingDto(booking);
     }
 
     public async Task<BookingDto?> GetBookingByIdAsync(string id)
     {
         var booking = await bookingRepositoryAdapter.GetByIdAsync(id);
-        return booking != null ? MapToDto(booking) : null;
+        return booking != null ? DtoMapper.BookingToBookingDto(booking) : null;
     }
 
     public async Task<IList<BookingDto>> GetAllBookingsAsync(int page = 0, int count = 30)
     {
         var bookings = await bookingRepositoryAdapter.GetAsync(page, count);
-        return bookings.Select(MapToDto).ToList();
+        return bookings.Select(DtoMapper.BookingToBookingDto).ToList();
     }
 
     public async Task<BookingDto> UpdateBookingAsync(string id, BookingDto bookingDto)
     {
-        var existingBooking = await bookingRepositoryAdapter.GetByIdAsync(id);
-        if (existingBooking == null)
-        {
-            throw new ArgumentException($"Бронирование с ID {id} не найдено");
-        }
-
-        // Обновляем свойства существующего бронирования
+        var existingBooking = await bookingRepositoryAdapter.GetByIdAsync(id) ?? throw new ArgumentException($"Бронирование с ID {id} не найдено");
         var updatedBooking = existingBooking with
         {
-            BookName = bookingDto.BookName ?? existingBooking.BookName,
+            HotelId = bookingDto.HotelId,
+            RoomId = bookingDto.RoomId,
+            GuestName = bookingDto.GuestName,
+            GuestEmail = bookingDto.GuestEmail,
+            CheckInDate = DateOnly.FromDateTime(bookingDto.CheckInDate),
+            CheckOutDate = DateOnly.FromDateTime(bookingDto.CheckOutDate),
+            UpdatedAt = DateTime.UtcNow,
             Price = bookingDto.Price,
-            Category = bookingDto.Category ?? existingBooking.Category
-            // TODO: Добавить обновление других свойств
+            Status = bookingDto.Status,
+            Adults = bookingDto.Adults,
+            Kids = bookingDto.Kids,
+            Category = bookingDto.Category,
+            StateId = Guid.TryParse(bookingDto.StateId, out var stateId) ? stateId : existingBooking.StateId
         };
 
-        bookingRepositoryAdapter.UpdateAsync(updatedBooking);
-
-        return MapToDto(updatedBooking);
+        await bookingRepositoryAdapter.UpdateAsync(updatedBooking);
+        return DtoMapper.BookingToBookingDto(updatedBooking);
     }
 
     public async Task<bool> DeleteBookingAsync(string id)
@@ -85,21 +91,7 @@ public class BookingService(
             return false;
         }
 
-        bookingRepositoryAdapter.DeleteAsync(id);
+        await bookingRepositoryAdapter.DeleteAsync(id);
         return true;
-    }
-
-    private static BookingDto MapToDto(Booking booking)
-    {
-        return new BookingDto
-        {
-            BookingId = booking.Id,
-            RoomId = booking.Room.Id,
-            BookName = booking.BookName,
-            Price = booking.Price,
-            Category = booking.Category,
-            CreatedDate = booking.Created,
-            State = BookingState.Created // TODO: Маппить правильное состояние
-        };
     }
 } 

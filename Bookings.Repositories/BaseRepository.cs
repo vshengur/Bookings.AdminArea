@@ -45,14 +45,14 @@ public abstract class BaseRepository<TDomain, TDocument> : IBaseRepository<TDoma
         await _dbCollection.InsertOneAsync(_mapper.ToDocument(obj));
     }
 
-    public void Delete(string id)
+    public async Task Delete(string id)
     {
         var objectId = new ObjectId(id);
-        _dbCollection.DeleteOneAsync(Builders<TDocument>.Filter.Eq("_id", objectId));
+        await _dbCollection.DeleteOneAsync(Builders<TDocument>.Filter.Eq("_id", objectId));
 
     }
 
-    public async Task<TDomain> Get(string id)
+    public async Task<TDomain?> Get(string id)
     {
         var objectId = new ObjectId(id);
 
@@ -81,9 +81,9 @@ public abstract class BaseRepository<TDomain, TDocument> : IBaseRepository<TDoma
             .ToList();
     }
 
-    public void Update(TDomain obj)
+    public async Task Update(TDomain obj)
     {
-        _dbCollection
+        await _dbCollection
             .ReplaceOneAsync(Builders<TDocument>.Filter.Eq("_id", obj.Id), _mapper.ToDocument(obj));
     }
 }

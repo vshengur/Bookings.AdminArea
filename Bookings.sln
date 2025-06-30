@@ -1,11 +1,12 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32319.34
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bookings.Domain", "Bookings.Domain\Bookings.Domain.csproj", "{EF2085BA-DC00-4F9B-A786-46DA0C415567}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bookings.Repositories", "Bookings.Repositories\Bookings.Repositories.csproj", "{94A5E287-AB3D-4969-AF3C-18A9E1828D2B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bookings.PostgresRepositories", "Bookings.PostgresRepositories\Bookings.PostgresRepositories.csproj", "{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bookings.Api", "Bookings.Api\Bookings.Api.csproj", "{1513DBF3-C2F2-4AF7-90CD-135EC2778E1D}"
 EndProject
@@ -19,6 +20,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
 		README.md = README.md
+		README-Database-Setup.md = README-Database-Setup.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bookings.Infrastructure", "Bookings.Infrastructure\Bookings.Infrastructure.csproj", "{873137F2-8B84-4E68-844F-697ABC19B1AC}"
@@ -76,6 +78,18 @@ Global
 		{94A5E287-AB3D-4969-AF3C-18A9E1828D2B}.Release|x64.Build.0 = Release|Any CPU
 		{94A5E287-AB3D-4969-AF3C-18A9E1828D2B}.Release|x86.ActiveCfg = Release|Any CPU
 		{94A5E287-AB3D-4969-AF3C-18A9E1828D2B}.Release|x86.Build.0 = Release|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Debug|x64.Build.0 = Debug|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Debug|x86.Build.0 = Debug|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Release|x64.ActiveCfg = Release|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Release|x64.Build.0 = Release|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Release|x86.ActiveCfg = Release|Any CPU
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890}.Release|x86.Build.0 = Release|Any CPU
 		{1513DBF3-C2F2-4AF7-90CD-135EC2778E1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1513DBF3-C2F2-4AF7-90CD-135EC2778E1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1513DBF3-C2F2-4AF7-90CD-135EC2778E1D}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -163,6 +177,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{EF2085BA-DC00-4F9B-A786-46DA0C415567} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{94A5E287-AB3D-4969-AF3C-18A9E1828D2B} = {2D518F83-2DBF-46CC-ADCD-ED04D4C13265}
+		{A1B2C3D4-E5F6-7890-ABCD-EF1234567890} = {2D518F83-2DBF-46CC-ADCD-ED04D4C13265}
 		{1513DBF3-C2F2-4AF7-90CD-135EC2778E1D} = {9C2498DE-E114-415B-8189-1FE2681AB597}
 		{C5E00AD1-4B8E-4C7E-9F80-48CCFE42841C} = {2D518F83-2DBF-46CC-ADCD-ED04D4C13265}
 		{873137F2-8B84-4E68-844F-697ABC19B1AC} = {2D518F83-2DBF-46CC-ADCD-ED04D4C13265}

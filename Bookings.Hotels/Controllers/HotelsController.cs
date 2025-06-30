@@ -36,8 +36,7 @@ public class HotelsController(ILogger<HotelsController> logger, IBus bus, IHotel
     public async Task<List<HotelDto>> GetHotels()
     {
         var hotels = await repository.Get(0, 20);
-        var mapper = new DtoMapper();
-        return hotels.Select(_ => mapper.HotelToHotelDto(_)).ToList();
+        return [.. hotels.Select(_ => DtoMapper.HotelToHotelDto(_))];
     }
 
     /// <summary>

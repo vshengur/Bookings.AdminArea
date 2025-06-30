@@ -18,16 +18,17 @@ namespace Bookings.Repositories
         {
             base.Load(services);
 
-            services.AddTransient<IBookingsRepository, BookingsRepository>();
+            // MongoDB репозитории только для Hotels и Rooms
             services.AddTransient<IHotelsRepository, HotelsRepository>();
             services.AddTransient<IRoomsRepository, RoomsRepository>();
 
+            // Сервисы остаются в MongoDB
             services.AddTransient<BookingRepositoryAdapter>();
             services.AddTransient<IBookingStateService, BookingStateService>();
             services.AddTransient<IBookingService, BookingService>();
             services.AddTransient<IBookingQueryService, BookingQueryService>();
 
-            services.AddScoped<IDocumentMapper<Booking, BookingDocument>, BookingsMapper>();
+            // Мапперы для MongoDB документов
             services.AddScoped<IDocumentMapper<Hotel, HotelDocument>, HotelsMapper>();
             services.AddScoped<IDocumentMapper<Room, RoomDocument>, RoomsMapper>();
         }
